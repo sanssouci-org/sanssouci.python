@@ -4,7 +4,10 @@
 # setup
 # ---------------
 import numpy as np
+import matplotlib.pyplot as plt 
+
 import sanssouci as sa
+
 from nilearn import datasets
 from nilearn.input_data import NiftiMasker
 from nilearn.image import get_data
@@ -93,7 +96,7 @@ thr=sa.t_linear(lambda_quant, np.arange(1,p+1), p)
 # Post hoc bound
 # --------------
 
-swt=sa.row_welch_tests(X, categ)
+swt=sa.row_welch_tests(fmri_masked, categ)
 p_values=swt['p_value'][:]
 pvals=p_values[:10]
 
