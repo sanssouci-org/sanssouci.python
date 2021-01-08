@@ -7,7 +7,7 @@ requirements = ["numpy>=1.19.4"]
 
 setup(
     name="sanssouci",
-    version="0.1.1",
+    version="0.1.2",
     author="Laurent Risser and Pierre Neuvial",
     author_email="pierre.neuvial@math.univ-toulouse.fr",
     description="Post hoc inference via multiple testing",
