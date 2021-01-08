@@ -1,5 +1,7 @@
 # sanssouci.python
 
+### General presentation
+
 Post hoc inference via multiple testing
 
 The goal of this projet is to port the [R package sansSouci](pneuvial.github.io/sanssouci/) to python.
@@ -7,8 +9,9 @@ The goal of this projet is to port the [R package sansSouci](pneuvial.github.io/
 Authors: Laurent Risser and Pierre Neuvial
 
 
-## Test the package on synthetic data
+### Test the package on synthetic data
 
+Here is a simple code you can use to test and get familiar with the *sanssouci* package. Other examples are given in the *examples* directory.
 
 ```
 import sanssouci as sa
