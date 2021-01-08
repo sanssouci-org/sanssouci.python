@@ -76,7 +76,7 @@ categ
 # --------------------
 # Permutation p-values
 # --------------------
-B = 1000
+B = 100
 pval0=sa.get_perm_p(fmri_masked, categ, B=B , row_test_fun=sa.row_welch_tests)
 
 K=p
@@ -98,7 +98,9 @@ thr=sa.t_linear(lambda_quant, np.arange(1,p+1), p)
 
 swt=sa.row_welch_tests(fmri_masked, categ)
 p_values=swt['p_value'][:]
-pvals=p_values[:10]
+p_values=p_values[np.argsort(p_values)]
+pvals=p_values[:500]
+pvals
 
 bound = sa.max_fp(pvals, thr)
 print(bound)
@@ -107,17 +109,19 @@ print(bound)
 # Confidence envelopes
 # --------------------
 
+max_FP = sa.curve_max_fp(pvals, thr)
+print(max_FP)
 max_FP=sa.curve_max_fp(p_values, thr)
 
-rg = np.arange(1, p+1)
-max_FDP = max_FP / rg
-min_TP = rg - max_FP
-plt.subplot(121)
-plt.plot(max_FDP)
-plt.title('Upper bound on FDP')
-plt.xlim(1, 1000)
-plt.subplot(122)
-plt.plot(min_TP)
-plt.title('Lower bound on TP')
-plt.xlim(1, 1000)
-plt.show()
+# rg = np.arange(1, p+1)
+# max_FDP = max_FP / rg
+# min_TP = rg - max_FP
+# plt.subplot(121)
+# plt.plot(max_FDP)
+# plt.title('Upper bound on FDP')
+# plt.xlim(1, 1000)
+# plt.subplot(122)
+# plt.plot(min_TP)
+# plt.title('Lower bound on TP')
+# plt.xlim(1, 1000)
+# plt.show()
