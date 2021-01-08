@@ -10,7 +10,7 @@ Authors: [Laurent Risser](http://laurent.risser.free.fr/) and [Pierre Neuvial](h
 
 ### Permutation-based confidence envelopes
 
-A typical output is shown below:
+A typical output for fMRI data (Localizer data set, left vs right click) is shown below:
 
 ![Confidence envelopes](img/confidence-envelopes.png)
 
