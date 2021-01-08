@@ -76,7 +76,7 @@ categ
 # --------------------
 # Permutation p-values
 # --------------------
-B = 100
+B = 1000
 pval0=sa.get_perm_p(fmri_masked, categ, B=B , row_test_fun=sa.row_welch_tests)
 
 K=p

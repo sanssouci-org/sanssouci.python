@@ -6,8 +6,15 @@ Post hoc inference via multiple testing
 
 The goal of this projet is to port the [R package sansSouci](https://pneuvial.github.io/sanssouci/) to python.
 
-Authors: Laurent Risser and Pierre Neuvial
+Authors: [Laurent Risser](http://laurent.risser.free.fr/) and [Pierre Neuvial](https://www.math.univ-toulouse.fr/~pneuvial/).
 
+### Permutation-based confidence envelopes
+
+A typical output is shown below:
+
+![Confidence envelopes](img/confidence-envelopes.png)
+
+The left plot displays an upper confidence envelope on the False Discovery Proportion among the most significant voxels. The right plot displays a lower confidence envelope on the number of True Postives among the most significant voxels. See the [Script to reproduce this plot](./examples/posthoc_fMRI.py).
 
 ### Test the package on synthetic data
 
