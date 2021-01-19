@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy>=1.19.4"]
+requirements = ["numpy>=1.15.0","scipy>=1.0.0"]
 
 setup(
     name="sanssouci",
