@@ -10,7 +10,7 @@ def max_fp(p_values, thr):
     """
     Upper bound for the number of false discoveries in a selection
 
-    * Inputs:
+    * Parameters:
       - p_values: A 1D numpy array of p-values for the selected items
       - thr: A 1D numpy array of non-decreasing k-FWER-controlling thresholds
     * Returns:
@@ -52,7 +52,7 @@ def min_tp(p_values, thr):
     """
     Lower bound for the number of true discoveries in a selection
 
-    * Inputs:
+    * Parameters:
         - p_values: A 1D numpy array of p-values for the selected items
           - thr: A 1D numpy array of non-decreasing k-FWER-controlling
                  thresholds
@@ -72,7 +72,7 @@ def curve_max_fp(p_values, thr):
     Upper bound for the number of false discoveries among most
     significant items.
 
-    * Inputs:
+    * Parameters:
         - p_values: A 1D numpy array containing all $p$ p-values,
                     sorted non-decreasingly
         - thr: A 1D numpy array  of $K$ JER-controlling thresholds,
