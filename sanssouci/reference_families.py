@@ -19,10 +19,10 @@ def t_inv_linear(p0):
 
     p = p0.shape[1]
 
-    normalized_ranks = (np.arange(p)+1)/float(p)
+    normalized_ranks = (np.arange(p) + 1) / float(p)
 
-    return p0/normalized_ranks
+    return p0 / normalized_ranks
 
 
 def t_linear(alpha, k, m):
-    return alpha * k / (m*1.0)
+    return alpha * k / (m * 1.0)

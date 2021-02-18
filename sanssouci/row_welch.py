@@ -34,10 +34,10 @@ def get_summary_stats(mat, categ):
         ww = np.where(categ[:] == cc)[0]
         matc = mat[ww, :]
         sumc = np.sum(matc, axis=0)
-        sum2c = np.sum(matc*matc, axis=0)
+        sum2c = np.sum(matc * matc, axis=0)
         nc = ww.shape[0]
-        mc = sumc/nc
-        sc = np.sqrt((sum2c-((sumc*sumc)/nc))/(nc-1))
+        mc = sumc / nc
+        sc = np.sqrt((sum2c - ((sumc * sumc) / nc)) / (nc - 1))
 
         res[cc] = {"sum": sumc, "sum2": sum2c, "n": nc, "mean": mc, "sd": sc}
 
@@ -71,19 +71,19 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
     """
 
     # pre-computations
-    sse_x = (sx*sx)/nx
-    sse_y = (sy*sy)/ny
-    sse = sse_x+sse_y
-    sse2 = sse*sse
+    sse_x = (sx * sx) / nx
+    sse_y = (sy * sy) / ny
+    sse = sse_x + sse_y
+    sse2 = sse * sse
 
     # test statistic
-    stat = (mx-my)/np.sqrt(sse)
+    stat = (mx - my) / np.sqrt(sse)
 
     # approximate degrees of freedom (Welch-Satterthwaite)
-    df = sse2 / ((sse_x*sse_x/(nx-1)) + ((sse_y*sse_y)/(ny-1)))
+    df = sse2 / ((sse_x * sse_x / (nx - 1)) + ((sse_y * sse_y) / (ny - 1)))
 
     # p-value
-    pval = 2*(1 - stats.t.cdf(np.abs(stat), df=df))
+    pval = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
 
     return {"statistic": stat, "parameter": df, "p_value": pval}
 
@@ -118,6 +118,6 @@ def row_welch_tests(mat, categ):
 
     swt = suff_welch_test(X["mean"], Y["mean"], X["sd"],
                           Y["sd"], X["n"], Y["n"])
-    swt["meanDiff"] = X["mean"]-Y["mean"]
+    swt["meanDiff"] = X["mean"] - Y["mean"]
 
     return swt

@@ -101,12 +101,12 @@ def curve_max_fp(p_values, thr):
     kMax = thr.shape[0]
 
     if kMax < p:
-        thr = np.concatenate((thr, thr[-1]*np.ones(p - kMax)))
+        thr = np.concatenate((thr, thr[-1] * np.ones(p - kMax)))
         kMax = thr.shape[0]
 
-    K = np.ones(p)*(kMax)
+    K = np.ones(p) * (kMax)
     # K[i] = number of k/ T[i] <= s[k] = BB in 'Mein2006'
-    Z = np.ones(kMax)*(p)
+    Z = np.ones(kMax) * (p)
     # Z[k] = number of i/ T[i] >  s[k] = cardinal of R_k
     # 'K' and 'Z' are initialized to their largest possible value,
     #       ie 'p' and 'kMax', respectively
@@ -133,7 +133,7 @@ def curve_max_fp(p_values, thr):
 
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
-    Vbar[ww] = np.min(np.concatenate(((ww+1-cA).reshape(1, -1),
+    Vbar[ww] = np.min(np.concatenate(((ww+1 - cA).reshape(1, -1),
                                       (K[ww]).reshape(1, -1)),
                                      axis=0),
                       axis=0)
