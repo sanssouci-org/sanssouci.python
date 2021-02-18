@@ -129,11 +129,11 @@ def curve_max_fp(p_values, thr):
     K_ww = K[ww].astype(np.int)
     cummax_A = A.copy()
     for i in range(1, cummax_A.shape[0]):
-        cummax_A[i] = np.max([cummax_A[i-1], cummax_A[i]])
+        cummax_A[i] = np.max([cummax_A[i - 1], cummax_A[i]])
 
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
-    Vbar[ww] = np.min(np.concatenate(((ww+1 - cA).reshape(1, -1),
+    Vbar[ww] = np.min(np.concatenate(((ww + 1 - cA).reshape(1, -1),
                                       (K[ww]).reshape(1, -1)),
                                      axis=0),
                       axis=0)
