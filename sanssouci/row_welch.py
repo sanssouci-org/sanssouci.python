@@ -17,6 +17,7 @@ def get_summary_stats(mat, categ):
 
     Parameters
     ----------
+
     mat : array-like of shape (n, p)
         Numpy array matrix whose columns correspond to the p variables
         and rows to the n observations
@@ -26,6 +27,7 @@ def get_summary_stats(mat, categ):
 
     Returns
     -------
+
     Dict :
         A dictionary containing the above-described summary statistics for
         each category
@@ -55,6 +57,7 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
 
     Parameters
     ----------
+
     mx : array-like
         A numeric value or vector, the sample average for condition "x"
     my : array-like
@@ -75,6 +78,7 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
 
     Returns
     -------
+
     Dict:
         Dictionary with elements
         statistic: the value of the t-statistic
@@ -83,6 +87,7 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
 
     Notes
     -----
+
     Note that the alternative hypothesis is "two.sided". It could be extended
     to "greater" or "less" as in the original R code.
     """
@@ -114,6 +119,7 @@ def row_welch_tests(mat, categ):
 
     Parameters
     ----------
+
     mat : array-like of shape (n, p)
         Numpy array matrix whose columns correspond to the p variables
          and rows to the n observations
@@ -123,16 +129,19 @@ def row_welch_tests(mat, categ):
 
     Returns
     -------
+
     array-like :
         give some statistics
 
     Notes
     -----
+
     Note that the alternative hypothesis is "two.sided". It could be extended
     to "greater" or "less" as in the original R code.
 
     References
     ----------
+
     ..[1] B. L. Welch (1951), On the comparison of several mean values:
         an alternative approach. Biometrika, 38, 330-336
 

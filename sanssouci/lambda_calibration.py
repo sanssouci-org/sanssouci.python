@@ -17,6 +17,7 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
 
     Parameters
     ----------
+
     X : array-like of shape (n,p)
         numpy array of size [n,p], containing n observations of p variables
         (hypotheses)
@@ -34,6 +35,7 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
 
     Returns
     -------
+
     pva0 : array-like of shape (B, p)
         A numpy array of size [B,p], whose entry i,j corresponds to
         p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
@@ -91,6 +93,7 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
 
     Parameters
     ----------
+
     p0 :  array-like of shape (B, p)
         A numpy array of size [B,p] of null p-values obtained from
         B permutations for p hypotheses.
@@ -102,6 +105,7 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
 
     Returns
     -------
+
     array-like of shape (B,)
         A numpy array of of size [B]  containing the pivotal statitics, whose
         j-th entry corresponds to \psi(g_j.X) with notation of the AoS 2020

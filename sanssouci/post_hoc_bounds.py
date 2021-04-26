@@ -12,6 +12,7 @@ def max_fp(p_values, thr):
 
     Parameters
     ----------
+
     p_values : 1D numpy.array
         A 1D numpy array of p-values for the selected items
     thr : 1D numpy.array
@@ -19,12 +20,14 @@ def max_fp(p_values, thr):
 
     Returns
     -------
+
     ndarray or scalar :
         A post hoc upper bound on the number of false discoveries in the
         selection
 
     See Also
     --------
+
     sanssouci.min_tp, sanssouci.curve_max_fp
 
     References
@@ -67,6 +70,7 @@ def min_tp(p_values, thr):
 
     Parameters
     -----------
+
     p_values : 1D numpy.array
         A 1D numpy array of p-values for the selected items
     thr : 1D numpy.array
@@ -74,11 +78,13 @@ def min_tp(p_values, thr):
 
     Returns
     -------
+
     ndarray or scalar :
         A Lower bound on the number of true discoveries in the selection
 
     References
     ----------
+
     .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
@@ -94,6 +100,7 @@ def curve_max_fp(p_values, thr):
 
     Parameters
     ----------
+
     p_values : 1D numpy.array
         A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
     thr : 1D numpy.array
@@ -102,6 +109,7 @@ def curve_max_fp(p_values, thr):
 
     Returns
     -------
+
     numpy.array :
         A vector of size p giving an joint upper confidence bound on the
         number of false discoveries among the $k$ most significant items for
@@ -109,6 +117,7 @@ def curve_max_fp(p_values, thr):
 
     References
     ----------
+
     .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
