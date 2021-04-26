@@ -11,7 +11,7 @@ from .reference_families import t_inv_linear
 
 
 def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
-    r"""
+    """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by repeated permutation of class labels.
 
@@ -23,7 +23,7 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     categ : array-like of shape (n,)
         numpy array of size [n], containing n values in {0, 1}, each of them
         specifying the column indices of the first and the second sample.
-    B : int, default=100
+    B : int
         number of permutations to be performed (default=100)
     row_test_fun : function
         testing function with the same I/O as 'stats.ttest_ind' (default).
@@ -87,16 +87,16 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
 
 
 def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
-    r"""Get pivotal statistic
+    """Get pivotal statistic
 
     Parameters
     ----------
     p0 :  array-like of shape (B, p)
         A numpy array of size [B,p] of null p-values obtained from
         B permutations for p hypotheses.
-    t_inv : function, default=t_inv_linear
+    t_inv : function
         A function with the same I/O as t_inv_linear
-    K :  int, default=-1
+    K :  int
         For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
         Automatically set to p if its input value is < 0.
 
