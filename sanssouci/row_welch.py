@@ -15,14 +15,21 @@ def get_summary_stats(mat, categ):
     The following statistics are calculated: sums, sums of squares, means,
     standard deviations, sample sizes
 
-    * Inputs:
-        - mat: Numpy array matrix whose columns correspond to the p variables
+    Parameters
+    ----------
+
+    mat : array-like of shape (n, p)
+        Numpy array matrix whose columns correspond to the p variables
         and rows to the n observations
-        - categ:  A numpy array of size n representing the category of each
+    categ :  array-like of shape (n, )
+        A numpy array of size n representing the category of each
         observation, in {0, 1}
 
-    * returns:
-        - A dictionary containing the above-described summary statistics for
+    Returns
+    -------
+
+    Dict :
+        A dictionary containing the above-described summary statistics for
         each category
     """
 
@@ -48,26 +55,41 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
     """
     Welch test from sufficient statistics
 
-    * Inputs:
-        - mx: A numeric value or vector, the sample average for condition "x"
-        - my A numeric value or vector of the same length as 'mx', the sample
+    Parameters
+    ----------
+
+    mx : array-like
+        A numeric value or vector, the sample average for condition "x"
+    my : array-like
+        A numeric value or vector of the same length as 'mx', the sample
         average for condition "y"
-        - sx A numeric value or vector of the same length as 'mx', the standard
+    sx : array-like
+        A numeric value or vector of the same length as 'mx', the standard
         deviation for condition "x"
-        - sy A numeric value or vector of the same length as 'mx', the standard
+    sy : array-like
+        A numeric value or vector of the same length as 'mx', the standard
         deviation for condition "y"
-        - nx A numeric value or vector of the same length as 'mx', the sample
+    nx : array-like
+        A numeric value or vector of the same length as 'mx', the sample
         size for condition "x"
-        - ny A numeric value or vector of the same length as 'mx', the sample
+    ny : array-like
+        A numeric value or vector of the same length as 'mx', the sample
         size for condition "y"
 
-        Note that the alternative hypothesis is "two.sided". It could be
-         extended to "greater" or "less" as in the original R code.
+    Returns
+    -------
 
-    * Returns: A dictionary with elements:
-        - statistic: the value of the t-statistic
-        - parameter:  the degrees of freedom for the t-statistic
-        - p_value: the p-value for the test
+    Dict:
+        Dictionary with elements
+        statistic: the value of the t-statistic
+        parameter:  the degrees of freedom for the t-statistic
+        p_value: the p-value for the test
+
+    Notes
+    -----
+
+    Note that the alternative hypothesis is "two.sided". It could be extended
+    to "greater" or "less" as in the original R code.
     """
 
     # pre-computations
@@ -95,16 +117,33 @@ def row_welch_tests(mat, categ):
     Note that the alternative hypothesis is "two.sided". It could be extended
     to "greater" or "less" as in the original R code.
 
-    * Inputs:
-        - mat: Numpy array matrix whose columns correspond to the p variables
+    Parameters
+    ----------
+
+    mat : array-like of shape (n, p)
+        Numpy array matrix whose columns correspond to the p variables
          and rows to the n observations
-        - categ:  A numpy array of size n representing the category of each
+    categ :  array-like of shape (n, )
+        A numpy array of size n representing the category of each
         observation, in {0, 1}
 
-    * Returns: ...
+    Returns
+    -------
 
-    * References: B. L. Welch (1951), On the comparison of several mean values:
-                 an alternative approach. Biometrika, 38, 330-336
+    array-like :
+        give some statistics
+
+    Notes
+    -----
+
+    Note that the alternative hypothesis is "two.sided". It could be extended
+    to "greater" or "less" as in the original R code.
+
+    References
+    ----------
+
+    ..[1] B. L. Welch (1951), On the comparison of several mean values:
+        an alternative approach. Biometrika, 38, 330-336
 
     """
 

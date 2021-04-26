@@ -15,29 +15,38 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by repeated permutation of class labels.
 
-    Inputs:
-    - X: numpy array of size [n,p], containing n observations of p variables
-         (hypotheses)
-    - categ: numpy array of size [n], containing n values in {0, 1}, each of
-           them specifying the column indices of the first and the second
-           sample.
-    - B: number of permutations to be performed (default=100)
-    - row_test_fun: testing function with the same I/O as 'stats.ttest_ind'
-                    (default).Specifically, must have two lists as inputs
-                    (or 1d np.arrays) for thecompared data, and the resulting
-                    pvalue must be accessed in '[test].pvalue'
-                    Eligible functions are for instance "stats.ks_2samp",
-                    "stats.bartlett", "stats.ranksums", "stats.kruskal"
+    Parameters
+    ----------
 
-    Returns:
-    - pval0:  A numpy array of size [B,p], whose entry i,j corresponds to
-              p_{(j)}(g_i.X)with notation of the AoS 2020 paper cited below
-              (section 4.5)
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    categ : array-like of shape (n,)
+        numpy array of size [n], containing n values in {0, 1}, each of them
+        specifying the column indices of the first and the second sample.
+    B : int
+        number of permutations to be performed (default=100)
+    row_test_fun : function
+        testing function with the same I/O as 'stats.ttest_ind' (default).
+        Specifically, must have two lists as inputs (or 1d np.arrays) for
+        thecompared data, and the resulting pvalue must be accessed in
+        '[test].pvalue' Eligible functions are for instance "stats.ks_2samp",
+        "stats.bartlett", "stats.ranksums", "stats.kruskal"
 
-    Reference:
-    - Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc confidence
-       bounds on false positives using reference families.
-       Annals of Statistics, 48(3), 1281-1303.
+    Returns
+    -------
+
+    pva0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose entry i,j corresponds to
+        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
+        (section 4.5) [1]_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
     """
 
     # Init
@@ -80,25 +89,34 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
 
 
 def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
-    """
-    Get pivotal statistic
+    """Get pivotal statistic
 
-    Inputs:
-    - p0:  A numpy array of size [B,p] of null p-values obtained from
-           B permutations for p hypotheses.
-    - t_inv: A function with the same I/O as t_inv_linear
-    -  K:  For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
-           Automatically set to p if its input value is < 0.
+    Parameters
+    ----------
 
-    Returns:
-     - A numpy array of of size [B]  containing the pivotal statitics,
-       whose j-th entry corresponds to \psi(g_j.X) with notation of
-       the AoS 2020 paper cited below (section 4.5)
+    p0 :  array-like of shape (B, p)
+        A numpy array of size [B,p] of null p-values obtained from
+        B permutations for p hypotheses.
+    t_inv : function
+        A function with the same I/O as t_inv_linear
+    K :  int
+        For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
+        Automatically set to p if its input value is < 0.
 
-     Reference:
-     - Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc confidence
-       bounds on false positives using reference families.
-       Annals of Statistics, 48(3), 1281-1303.
+    Returns
+    -------
+
+    array-like of shape (B,)
+        A numpy array of of size [B]  containing the pivotal statitics, whose
+        j-th entry corresponds to \psi(g_j.X) with notation of the AoS 2020
+        paper cited below (section 4.5) [1]_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
     """
 
     # Step 3: apply template function
