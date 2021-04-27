@@ -4,9 +4,8 @@ from numpy.testing import assert_array_almost_equal
 from sanssouci.post_hoc_bounds import max_fp, min_tp
 
 
-
 def test_max_fp():
-    p_values = np.linspace(1.e-6, 1-1.e-6, 100)
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
     p_values[:20] /= 10 ** 6
 
     # try with a scalar
@@ -26,9 +25,9 @@ def test_max_fp():
     thr = np.array([1.e-4])
     assert max_fp(p_values, thr) == 100
 
-    
+
 def test_min_tp():
-    p_values = np.linspace(1.e-6, 1-1.e-6, 100)
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
     p_values[:20] /= 10 ** 6
 
     # try with a scalar
@@ -47,4 +46,3 @@ def test_min_tp():
     p_values = np.random.rand(100)
     thr = np.array([1.e-4])
     assert min_tp(p_values, thr) == 0
-
