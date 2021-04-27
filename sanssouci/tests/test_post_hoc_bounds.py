@@ -21,7 +21,8 @@ def test_max_fp():
     assert_array_almost_equal(max_fp(p_values, thr), (80, 80, 80))
 
     # try with random sequence
-    p_values = np.random.rand(100)
+    rng = np.random.RandomState(42)
+    p_values = rng.rand(100)
     thr = np.array([1.e-4])
     assert max_fp(p_values, thr) == 100
 
@@ -43,6 +44,7 @@ def test_min_tp():
     assert_array_almost_equal(min_tp(p_values, thr), (20, 20, 20))
 
     # try with random sequence
-    p_values = np.random.rand(100)
+    rng = np.random.RandomState(42)
+    p_values = rng.rand(100)
     thr = np.array([1.e-4])
     assert min_tp(p_values, thr) == 0
