@@ -18,8 +18,8 @@ def test_max_fp():
 
     # try with unordered sequence
     thr = np.array([1.e-3, 1.e-4, 1.e-5])
-    assert_array_almost_equal(max_fp(p_values, thr), (80, 80, 80))
-
+    assert max_fp(p_values, thr) == 80
+    
     # try with random sequence
     rng = np.random.RandomState(42)
     p_values = rng.rand(100)

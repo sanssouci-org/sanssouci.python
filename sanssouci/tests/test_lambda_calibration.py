@@ -6,11 +6,12 @@ from scipy import stats
 
 
 def test_get_perm_p():
+    rng = np.random.RandomState(42)
     n = 20
     p = 50
-    X = np.random.randn(n, p)
+    X = rng.randn(n, p)
     B = 100
-    categ = np.random.randint(2, size=n)
+    categ = rng.randint(2, size=n)
     pvals = get_perm_p(X, categ, B=B, row_test_fun=stats.ttest_ind)
     assert pvals.shape == (B, p)
     assert pvals.min() > 1.e-7
