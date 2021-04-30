@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
-from sanssouci.post_hoc_bounds import max_fp, min_tp
+from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp
 
 
 def test_max_fp():
@@ -19,7 +19,7 @@ def test_max_fp():
     # try with unordered sequence
     thr = np.array([1.e-3, 1.e-4, 1.e-5])
     assert max_fp(p_values, thr) == 80
-    
+
     # try with random sequence
     rng = np.random.RandomState(42)
     p_values = rng.rand(100)
@@ -48,3 +48,50 @@ def test_min_tp():
     p_values = rng.rand(100)
     thr = np.array([1.e-4])
     assert min_tp(p_values, thr) == 0
+
+
+def test_curve_max_fp():
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
+    p_values[:20] /= 10 ** 6
+
+    # try with a scalar
+    thr = np.array([1.e-4])
+    curveMaxFP = curve_max_fp(p_values, thr)
+    assert isinstance(curveMaxFP, np.ndarray)
+    # assert all(curve_max_fp(p_values, thr) == 0)
+    assert all(curveMaxFP <= max_fp(p_values, thr))
+    assert len(curveMaxFP) == len(p_values)
+    assert all(curveMaxFP >= 0)
+    assert curveMaxFP[-1] == max_fp(p_values, thr)
+
+    # try with a sequence
+    thr = np.array([1.e-5, 1.e-4, 1.e-3])
+    curveMaxFP = curve_max_fp(p_values, thr)
+    assert isinstance(curveMaxFP, np.ndarray)
+    # assert all(curve_max_fp(p_values, thr) == 0)
+    assert all(curveMaxFP <= max_fp(p_values, thr))
+    assert len(curveMaxFP) == len(p_values)
+    assert all(curveMaxFP >= 0)
+    assert curveMaxFP[-1] == max_fp(p_values, thr)
+
+    # try with unordered sequence
+    thr = np.array([1.e-3, 1.e-4, 1.e-5])
+    curveMaxFP = curve_max_fp(p_values, thr)
+    assert isinstance(curveMaxFP, np.ndarray)
+    # assert all(curve_max_fp(p_values, thr) == 0)
+    assert all(curveMaxFP <= max_fp(p_values, thr))
+    assert len(curveMaxFP) == len(p_values)
+    assert all(curveMaxFP >= 0)
+    assert curveMaxFP[-1] == max_fp(p_values, thr)
+
+    # try with random sequence
+    rng = np.random.RandomState(42)
+    p_values = rng.rand(100)
+    thr = np.array([1.e-4])
+    curveMaxFP = curve_max_fp(p_values, thr)
+    assert isinstance(curveMaxFP, np.ndarray)
+    # assert all(curve_max_fp(p_values, thr) == 0)
+    assert all(curveMaxFP <= max_fp(p_values, thr))
+    assert len(curveMaxFP) == len(p_values)
+    assert all(curveMaxFP >= 0)
+    assert curveMaxFP[-1] == max_fp(p_values, thr)
