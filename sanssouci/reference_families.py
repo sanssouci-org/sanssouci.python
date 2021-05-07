@@ -55,7 +55,7 @@ def t_linear(alpha, k, m):
     Returns
     -------
 
-    int
+    float
 
     """
     return alpha * k / (m * 1.0)

@@ -1,7 +1,8 @@
 import numpy as np
-import pytest
-from numpy.testing import assert_array_almost_equal
+# import pytest
+# from numpy.testing import assert_array_almost_equal
 from sanssouci.lambda_calibration import get_perm_p
+# from sanssouci.reference_families import t_inv_linear
 from scipy import stats
 
 
@@ -24,4 +25,3 @@ def test_get_perm_p():
         assert pvals.min() > 1.e-7
         assert pvals.max() <= 1
         assert np.sum(pvals < .1) < B * p * .12
-
