@@ -1,5 +1,4 @@
 import numpy as np
-# import pytest
 from numpy.testing import assert_array_almost_equal
 from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp
 
@@ -22,12 +21,12 @@ def test_max_fp():
 
     # try with thr = null value
     # thr = np.array([])
-    # assert max_fp(p_values, thr) == 100
+    # assert max_fp(p_values, thr) == 100 #return 0
 
     # try with pval = null value
     # p_values = np.array([])
     # thr = np.array([1.e-4])
-    # assert max_fp(p_values, thr) == 0
+    # assert max_fp(p_values, thr) == 0 #return 0 here size of p_val ?
 
     # try with random sequence
     rng = np.random.RandomState(42)
@@ -54,12 +53,14 @@ def test_min_tp():
 
     # try with thr = null value
     # thr = np.array([])
-    # assert min_tp(p_values, thr) == 0 #
+    # p_values.shape[0] - max_fp(p_values, thr)
+    #  <=> 100 - 0 (max_fp pb)
+    # assert min_tp(p_values, thr) == 0 # return 100, every features are signal
 
     # try with pval = null value
     # p_values = np.array([])
     # thr = np.array([1.e-4])
-    # assert min_tp(p_values, thr) == 0 #size of pvalues
+    # assert min_tp(p_values, thr) == 0 #size of pvalues return 0
 
     # try with random sequence
     rng = np.random.RandomState(42)
