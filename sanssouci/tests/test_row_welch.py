@@ -1,5 +1,7 @@
 import numpy as np
-from sanssouci.row_welch import get_summary_stats, suff_welch_test, row_welch_tests
+from sanssouci.row_welch import get_summary_stats
+from sanssouci.row_welch import suff_welch_test
+from sanssouci.row_welch import row_welch_tests
 from numpy.testing import assert_array_almost_equal
 
 
@@ -23,7 +25,7 @@ def test_get_summary_stats():
     assert_array_almost_equal(summary[0]["sum"] + summary[1]["sum"],
                               np.sum(X, axis=0))
     assert_array_almost_equal(summary[0]["sum2"] + summary[1]["sum2"],
-                              np.sum(X*X, axis=0))
+                              np.sum(X * X, axis=0))
     len(summary[0]["sum"])
 
 
@@ -36,9 +38,9 @@ def test_suff_welch_test():
     ny = n - nx
 
     mx = rng.random_sample(p) - 1
-    sx = rng.randn(p)*0.5 + 1
+    sx = rng.randn(p) * 0.5 + 1
     my = rng.random_sample(p)
-    sy = rng.randn(p)*0.1 + 2
+    sy = rng.randn(p) * 0.1 + 2
 
     welch = suff_welch_test(mx, my, sx, sy, nx, ny)
     assert isinstance(welch, dict)
