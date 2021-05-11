@@ -19,14 +19,10 @@ def test_max_fp():
     thr = np.array([1.e-3, 1.e-4, 1.e-5])
     assert max_fp(p_values, thr) == 80
 
-    # try with thr = null value
-    # thr = np.array([])
-    # assert max_fp(p_values, thr) == 100 #return 0
-
     # try with pval = null value
-    # p_values = np.array([])
-    # thr = np.array([1.e-4])
-    # assert max_fp(p_values, thr) == 0 #return 0 here size of p_val ?
+    p_values = np.array([])
+    thr = np.array([1.e-4])
+    assert max_fp(p_values, thr) == 0  # return 0 here size of p_val ?
 
     # try with random sequence
     rng = np.random.RandomState(42)
@@ -51,16 +47,10 @@ def test_min_tp():
     thr = np.array([1.e-3, 1.e-4, 1.e-5])
     assert_array_almost_equal(min_tp(p_values, thr), (20, 20, 20))
 
-    # try with thr = null value
-    # thr = np.array([])
-    # p_values.shape[0] - max_fp(p_values, thr)
-    #  <=> 100 - 0 (max_fp pb)
-    # assert min_tp(p_values, thr) == 0 # return 100, every features are signal
-
     # try with pval = null value
-    # p_values = np.array([])
-    # thr = np.array([1.e-4])
-    # assert min_tp(p_values, thr) == 0 #size of pvalues return 0
+    p_values = np.array([])
+    thr = np.array([1.e-4])
+    assert min_tp(p_values, thr) == 0  # size of pvalues return 0
 
     # try with random sequence
     rng = np.random.RandomState(42)
