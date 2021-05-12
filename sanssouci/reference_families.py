@@ -48,14 +48,19 @@ def t_linear(alpha, k, m):
     Parameters
     ----------
 
-    alpha : int
-    k : int
+    alpha : float
+        A float in [0,1] as the confidence level
+    k : array-like of shape (K,)
+        sequence of integer frome 1 to K, could be generate with
+        np.arange(1, K+1) with K in [0,m]
     m : int
+        number of observation
 
     Returns
     -------
 
-    float
+    array-like of shape (K,) :
+
 
     """
     return alpha * k / (m * 1.0)

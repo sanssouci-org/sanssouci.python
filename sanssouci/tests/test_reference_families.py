@@ -1,5 +1,6 @@
 import numpy as np
 from sanssouci.reference_families import t_inv_linear, t_linear
+from numpy.testing import assert_array_almost_equal
 
 
 def test_t_inv_linear():
@@ -25,3 +26,19 @@ def test_t_linear():
     t = t_linear(alpha, k, m)
     assert t == alpha * k / (m * 1.0)
     assert isinstance(t, float)
+
+    alpha = .05
+    k = np.arange(1, 5)
+    m = 10
+    t = t_linear(alpha, k, m)
+    assert_array_almost_equal(t, alpha * k / (m * 1.0))
+    assert isinstance(t, np.ndarray)
+    assert len(t) == len(k)
+
+    alpha = .05
+    k = np.arange(1, 11)
+    m = 10
+    t = t_linear(alpha, k, m)
+    assert_array_almost_equal(t, alpha * k / (m * 1.0))
+    assert isinstance(t, np.ndarray)
+    assert len(t) == len(k)

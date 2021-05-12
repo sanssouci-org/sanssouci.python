@@ -130,8 +130,12 @@ def row_welch_tests(mat, categ):
     Returns
     -------
 
-    array-like :
-        give some statistics
+    Dict :
+        Dictionary with elements
+        statistic: the value of the t-statistic
+        parameter:  the degrees of freedom for the t-statistic
+        p_value: the p-value for the test
+        meanDiff: the log Fold Change between category 0 and 1
 
     Notes
     -----

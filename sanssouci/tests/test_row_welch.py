@@ -26,13 +26,11 @@ def test_get_summary_stats():
                               np.sum(X, axis=0))
     assert_array_almost_equal(summary[0]["sum2"] + summary[1]["sum2"],
                               np.sum(X * X, axis=0))
-    len(summary[0]["sum"])
 
 
 def test_suff_welch_test():
     rng = np.random.RandomState(42)
     p = 50
-
     n = 20
     nx = 10
     ny = n - nx
