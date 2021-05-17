@@ -54,7 +54,7 @@ def t_linear(alpha, k, m):
         sequence of integer frome 1 to K, could be generate with
         np.arange(1, K+1) with K in [0,m]
     m : int
-        number of observation
+        number of observations
 
     Returns
     -------

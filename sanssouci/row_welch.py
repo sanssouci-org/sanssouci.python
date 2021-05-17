@@ -28,7 +28,7 @@ def get_summary_stats(mat, categ):
     Returns
     -------
 
-    Dict :
+    test : dict of float arrays of shape (p,)
         A dictionary containing the above-described summary statistics for
         each category
     """
@@ -79,7 +79,7 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
     Returns
     -------
 
-    Dict:
+    test : dict of float arrays of shape (p,) with
         Dictionary with elements
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
@@ -130,8 +130,7 @@ def row_welch_tests(mat, categ):
     Returns
     -------
 
-    Dict :
-        Dictionary with elements
+    test : dict of float arrays of shape (p,) with
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
         p_value: the p-value for the test
