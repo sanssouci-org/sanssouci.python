@@ -3,6 +3,7 @@ from sanssouci.row_welch import get_summary_stats
 from sanssouci.row_welch import suff_welch_test
 from sanssouci.row_welch import row_welch_tests
 from numpy.testing import assert_array_almost_equal
+from scipy import stats
 
 
 def test_get_summary_stats():
@@ -26,6 +27,16 @@ def test_get_summary_stats():
                               np.sum(X, axis=0))
     assert_array_almost_equal(summary[0]["sum2"] + summary[1]["sum2"],
                               np.sum(X * X, axis=0))
+
+    pval0W = row_welch_tests(X, categ)['p_value'][:]
+    pval0T = np.zeros(p)
+    s0 = np.where(categ == 0)[0]
+    s1 = np.where(categ == 1)[0]
+    for ii in range(p):
+        rwt = stats.ttest_ind(X[s1, ii], X[s0, ii], equal_var=False, axis=0)
+        pval0T[ii] = rwt.pvalue
+
+    assert_array_almost_equal(pval0W, pval0T)
 
 
 def test_suff_welch_test():
