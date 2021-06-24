@@ -88,6 +88,8 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     return pval0
 
 
+# https://github.com/alexblnn/sanssouci.python
+
 def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
     """Get pivotal statistic
 
