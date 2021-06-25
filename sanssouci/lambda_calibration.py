@@ -88,7 +88,61 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     return pval0
 
 
-# https://github.com/alexblnn/sanssouci.python
+def get_permuted_p_values_one_sample(X, B=100, row_test_fun=stats.ttest_1samp):
+    """
+    Get permutation p-values: Get a matrix of p-values under the null
+    hypothesis obtained by sign-flipping (one-sample test).
+
+    Parameters
+    ----------
+
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    B : int
+        number of sign-flipping permutations to be performed (default=100)
+    row_test_fun : function
+        testing function with the same I/O as 'stats.ttest_1samp' (default).
+
+    Returns
+    -------
+
+    pva0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose entry i,j corresponds to
+        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
+        (section 4.5) [1]_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
+    # Init
+    n, p = X.shape
+
+    # intialise p-values
+    pval0 = np.zeros([B, p])
+
+    for bb in range(B):
+
+        sign_flip = 2 * np.random.randint(-1, 1, size=n) + 1
+        # generate random flips
+
+        for ii in range(p):
+
+            Xi_flipped = X[:, ii] * sign_flip  # sign-flip on a given voxel
+            test_result = row_test_fun(Xi_flipped, 0)  # one-sample test
+
+            pval0[bb, ii] = test_result.pvalue
+
+    # Sort each column
+    pval0 = np.sort(pval0, axis=1)
+
+    return pval0
+
 
 def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
     """Get pivotal statistic
