@@ -1,7 +1,5 @@
 import numpy as np
 from scipy import stats
-from math import sqrt
-from scipy.stats import norm
 
 from .row_welch import row_welch_tests
 from .reference_families import t_inv_linear
