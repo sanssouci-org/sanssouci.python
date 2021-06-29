@@ -105,7 +105,7 @@ def get_permuted_p_values_one_sample(X, B=100):
     Returns
     -------
 
-    pval0 : array-like of shape (B, p) sorted column wise
+    pval0 : array-like of shape (B, p)
         A numpy array of size [B,p], whose rows are sorted increasingly.
         The entry i,j corresponds to p_{(j)}(g_i.X) with notation of [1]
         (section 4.5)_
