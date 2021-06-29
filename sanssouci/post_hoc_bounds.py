@@ -108,7 +108,7 @@ def min_tdp(p_values, thr):
     Returns
     -------
 
-    ndarray or scalar :
+    scalar :
         A Lower bound on the proportion of true discoveries in the selection
 
     References
