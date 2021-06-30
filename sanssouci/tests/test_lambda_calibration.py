@@ -43,7 +43,6 @@ def test_get_permuted_p_values_one_sample():
     pvals = get_permuted_p_values_one_sample(X, B=B)
     assert pvals.shape == (B, p)
     assert (pvals == np.sort(pvals, axis=1)).all()
-    assert pvals = np.sort(pvals, axis=1)
     assert pvals.min() > 1.e-7
     assert pvals.max() <= 1
     assert np.sum(pvals < .1) < B * p * .12
