@@ -86,6 +86,7 @@ def test_min_tdp():
     thr = np.array([1.e-4])
     assert min_tdp(p_values, thr) == 0
 
+
 def test_curve_max_fp():
     p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
     p_values[:20] /= 10 ** 6
