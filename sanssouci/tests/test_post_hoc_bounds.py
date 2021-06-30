@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.testing import assert_array_almost_equal
-from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp
+from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp, min_tdp
 
 
 def test_max_fp():
@@ -58,6 +58,33 @@ def test_min_tp():
     thr = np.array([1.e-4])
     assert min_tp(p_values, thr) == 0
 
+
+def test_min_tdp():
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
+    p_values[:20] /= 10 ** 6
+
+    # try with a scalar
+    thr = np.array([1.e-4])
+    assert min_tdp(p_values, thr) == 0.2
+
+    # try with a sequence
+    thr = np.array([1.e-5, 1.e-4, 1.e-3])
+    assert min_tdp(p_values, thr) == 0.2
+
+    # try with unordered sequence
+    thr = np.array([1.e-3, 1.e-4, 1.e-5])
+    assert_array_almost_equal(min_tdp(p_values, thr), (0.2, 0.2, 0.2))
+
+    # try with pval = null value
+    p_values = np.array([])
+    thr = np.array([1.e-4])
+    assert min_tdp(p_values, thr) == 0  # size of pvalues return 0
+
+    # try with random sequence
+    rng = np.random.RandomState(42)
+    p_values = rng.rand(100)
+    thr = np.array([1.e-4])
+    assert min_tdp(p_values, thr) == 0
 
 def test_curve_max_fp():
     p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
