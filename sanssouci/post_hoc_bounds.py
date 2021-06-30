@@ -94,7 +94,7 @@ def min_tp(p_values, thr):
 
 
 def min_tdp(p_values, thr):
-    """
+    """Lower bound for the proportion of true discoveries in a selection
     Lower bound for the proportion of true discoveries in a selection
 
     Parameters
