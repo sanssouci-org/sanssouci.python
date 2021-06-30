@@ -88,6 +88,52 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     return pval0
 
 
+def get_permuted_p_values_one_sample(X, B=100):
+    """
+    Get permutation p-values: Get a matrix of p-values under the null
+    hypothesis obtained by sign-flipping (one-sample test).
+
+    Parameters
+    ----------
+
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    B : int
+        number of sign-flippings to be performed (default=100)
+
+    Returns
+    -------
+
+    pval0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose rows are sorted increasingly.
+        The entry i,j corresponds to p_{(j)}(g_i.X) with notation of [1]
+        (section 4.5)_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
+    # Init
+    n, p = X.shape
+
+    # intialise p-values
+    pval0 = np.zeros([B, p])
+
+    for b in range(B):
+        X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
+        _, pval0[b] = stats.ttest_1samp(X_flipped, 0)
+
+    # Sort each column
+    pval0 = np.sort(pval0, axis=1)
+
+    return pval0
+
+
 def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
     """Get pivotal statistic
 
@@ -118,6 +164,8 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
     """
+    # Sort permuted p-values
+    p0 = np.sort(p0, axis=1)
 
     # Step 3: apply template function
     tkInv_all = t_inv(p0)
