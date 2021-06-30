@@ -118,8 +118,10 @@ def min_tdp(p_values, thr):
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
     """
-
-    return min_tp(p_values, thr) / len(p_values)
+    if len(p_values) == 0:
+        return 0
+    else:
+        return min_tp(p_values, thr) / len(p_values)
 
 
 def curve_max_fp(p_values, thr):
