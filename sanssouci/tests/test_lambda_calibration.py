@@ -45,7 +45,7 @@ def test_get_pivotal_stat():
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tkInv_all = np.array([t_inv(p0[:, i], i+1, p) for i in range(p)]).T
+    tkInv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tkInv_all[:, :p], axis=1))
 
     piv_stat = get_pivotal_stats(p0, t_inv=t_inv_linear, K=1)
@@ -53,7 +53,7 @@ def test_get_pivotal_stat():
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tkInv_all = np.array([t_inv(p0[:, i], i+1, p) for i in range(p)]).T
+    tkInv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tkInv_all[:, :1], axis=1))
 
     piv_stat = get_pivotal_stats(p0, t_inv=t_inv_linear, K=p)
@@ -61,7 +61,7 @@ def test_get_pivotal_stat():
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tkInv_all = np.array([t_inv(p0[:, i], i+1, p) for i in range(p)]).T
+    tkInv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tkInv_all[:, :p], axis=1))
 
     piv_statB = get_pivotal_stats(p0, t_inv=t_inv_linear, K=p)
