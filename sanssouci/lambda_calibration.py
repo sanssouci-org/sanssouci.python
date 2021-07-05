@@ -170,7 +170,7 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
 
     # Step 3: apply template function
     B, p = p0.shape
-    tkInv_all = np.array([t_inv(p0[:, i], i+1, p) for i in range(p)]).T
+    tkInv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
 
     if K < 0:
         K = tkInv_all.shape[1]  # tkInv_all.shape[1] is equal to p
