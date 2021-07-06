@@ -11,12 +11,13 @@ def t_inv_linear(y, k, m):
     """
     Parameters
     ----------
-    y : array of floats
+    y : array of floats of shape (B, )
         values to apply template to
     k : int
         index of rejection set in linear template
     m : int
         number of hypotheses
+
     Returns
     -------
 
@@ -72,12 +73,13 @@ def t_inv_beta(y, k, m):
     """
     Parameters
     ----------
-    y : array of floats
+    y : array of floats of shape (B, )
         values to apply template to
     k : int
         index of rejection set in beta template
     m : int
         number of hypotheses
+
     Returns
     -------
 
