@@ -50,8 +50,7 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     """
 
     # Init
-    n = X.shape[0]
-    p = X.shape[1]
+    n, p = X.shape
 
     # Step 1: calculate $p$-values for B permutations of the class assignments
 
@@ -61,19 +60,19 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
     shuffled_categ_all = np.zeros([B, n])
     for bb in range(B):
         np.random.shuffle(shuffled_categ_current)
-        shuffled_categ_all[bb, :] = shuffled_categ_current[:]
+        shuffled_categ_all[bb] = shuffled_categ_current
 
     # 1.2: calculate the p-values
     pval0 = np.zeros([B, p])
 
     if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
         for bb in range(B):
-            swt = row_welch_tests(X, shuffled_categ_all[bb, :])
-            pval0[bb, :] = swt['p_value'][:]
+            permuted_test_result = row_welch_tests(X, shuffled_categ_all[bb])
+            pval0[bb] = permuted_test_result['p_value']
     else:                     # standard scipy tests
         for bb in range(B):
-            s0 = np.where(shuffled_categ_all[bb, :] == 0)[0]
-            s1 = np.where(shuffled_categ_all[bb, :] == 1)[0]
+            s0 = np.where(shuffled_categ_all[bb] == 0)[0]
+            s1 = np.where(shuffled_categ_all[bb] == 1)[0]
 
             for ii in range(p):
                 rwt = row_test_fun(X[s0, ii], X[s1, ii])
@@ -81,6 +80,66 @@ def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
                 # X[s1, ii], equal_var=False)
 
                 pval0[bb, ii] = rwt.pvalue
+
+    # Step 2: sort each column
+    pval0 = np.sort(pval0, axis=1)
+
+    return pval0
+
+
+def get_permuted_p_values_general(X, labels, B=100):
+    """
+    Get permutation p-values: Get a matrix of p-values under the null
+    hypothesis obtained by repeated permutation of class labels.
+
+    Parameters
+    ----------
+
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    labels : array-like of shape (n,)
+        numpy array of size [n], containing n values of a given variable
+    B : int
+        number of permutations to be performed (default=100)
+
+    Returns
+    -------
+
+    pval0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose entry i,j corresponds to
+        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
+        (section 4.5) [1]_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
+    # Init
+
+    n, p = X.shape
+
+    # Step 1: calculate $p$-values for B permutations of the class assignments
+
+    # 1.1: Intialise all vectors and matrices
+    shuffled_categ_current = labels.copy()
+
+    shuffled_categ_all = np.zeros([B, n])
+    for bb in range(B):
+        np.random.shuffle(shuffled_categ_current)
+        shuffled_categ_all[bb] = shuffled_categ_current
+
+    # 1.2: calculate the p-values
+    pval0 = np.zeros([B, p])
+
+    # row Welch Tests (parallelized)
+    for bb in range(B):
+        permuted_test_result = row_welch_tests(X, shuffled_categ_all[bb])
+        pval0[bb] = permuted_test_result['p_value']
 
     # Step 2: sort each column
     pval0 = np.sort(pval0, axis=1)
