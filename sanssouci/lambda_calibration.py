@@ -105,9 +105,9 @@ def get_permuted_p_values_one_sample(X, B=100):
     -------
 
     pval0 : array-like of shape (B, p)
-        A numpy array of size [B,p], whose entry i,j corresponds to
-        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
-        (section 4.5) [1]_
+        A numpy array of size [B,p], whose rows are sorted increasingly.
+        The entry i,j corresponds to p_{(j)}(g_i.X) with notation of [1]
+        (section 4.5)_
 
     References
     ----------
@@ -127,7 +127,6 @@ def get_permuted_p_values_one_sample(X, B=100):
         X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
         _, pval0[b] = stats.ttest_1samp(X_flipped, 0)
 
-    # Convert to p-values
     # Sort each column
     pval0 = np.sort(pval0, axis=1)
 

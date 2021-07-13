@@ -2,6 +2,7 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from sanssouci.lambda_calibration import get_permuted_p_values
 from sanssouci.lambda_calibration import get_pivotal_stats
+from sanssouci.lambda_calibration import get_permuted_p_values_one_sample
 from sanssouci.row_welch import row_welch_tests
 from sanssouci.reference_families import inverse_linear_template
 from scipy import stats
@@ -29,6 +30,20 @@ def test_get_permuted_p_values():
 
     pvals = get_permuted_p_values(X, categ, B=B, row_test_fun=row_welch_tests)
     assert pvals.shape == (B, p)
+    assert pvals.min() > 1.e-7
+    assert pvals.max() <= 1
+    assert np.sum(pvals < .1) < B * p * .12
+
+
+def test_get_permuted_p_values_one_sample():
+    rng = np.random.RandomState(42)
+    n = 20
+    p = 50
+    X = rng.randn(n, p)
+    B = 100
+    pvals = get_permuted_p_values_one_sample(X, B=B)
+    assert pvals.shape == (B, p)
+    assert (pvals == np.sort(pvals, axis=1)).all()
     assert pvals.min() > 1.e-7
     assert pvals.max() <= 1
     assert np.sum(pvals < .1) < B * p * .12
