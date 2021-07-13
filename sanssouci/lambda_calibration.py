@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 from .row_welch import row_welch_tests
-from .reference_families import t_inv_linear, t_inv_beta
+from .reference_families import inverse_linear_template, inverse_beta_template
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # LAMBDA-CALIBRATION
@@ -10,84 +10,7 @@ from .reference_families import t_inv_linear, t_inv_beta
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-def get_perm_p(X, categ, B=100, row_test_fun=stats.ttest_ind):
-    """
-    Get permutation p-values: Get a matrix of p-values under the null
-    hypothesis obtained by repeated permutation of class labels.
-
-    Parameters
-    ----------
-
-    X : array-like of shape (n,p)
-        numpy array of size [n,p], containing n observations of p variables
-        (hypotheses)
-    categ : array-like of shape (n,)
-        numpy array of size [n], containing n values in {0, 1}, each of them
-        specifying the column indices of the first and the second sample.
-    B : int
-        number of permutations to be performed (default=100)
-    row_test_fun : function
-        testing function with the same I/O as 'stats.ttest_ind' (default).
-        Specifically, must have two lists as inputs (or 1d np.arrays) for
-        thecompared data, and the resulting pvalue must be accessed in
-        '[test].pvalue' Eligible functions are for instance "stats.ks_2samp",
-        "stats.bartlett", "stats.ranksums", "stats.kruskal"
-
-    Returns
-    -------
-
-    pva0 : array-like of shape (B, p)
-        A numpy array of size [B,p], whose entry i,j corresponds to
-        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
-        (section 4.5) [1]_
-
-    References
-    ----------
-
-    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
-        confidence bounds on false positives using reference families.
-        Annals of Statistics, 48(3), 1281-1303.
-    """
-
-    # Init
-    n, p = X.shape
-
-    # Step 1: calculate $p$-values for B permutations of the class assignments
-
-    # 1.1: Intialise all vectors and matrices
-    shuffled_categ_current = categ.copy()
-
-    shuffled_categ_all = np.zeros([B, n])
-    for bb in range(B):
-        np.random.shuffle(shuffled_categ_current)
-        shuffled_categ_all[bb] = shuffled_categ_current
-
-    # 1.2: calculate the p-values
-    pval0 = np.zeros([B, p])
-
-    if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
-        for bb in range(B):
-            permuted_test_result = row_welch_tests(X, shuffled_categ_all[bb])
-            pval0[bb] = permuted_test_result['p_value']
-    else:                     # standard scipy tests
-        for bb in range(B):
-            s0 = np.where(shuffled_categ_all[bb] == 0)[0]
-            s1 = np.where(shuffled_categ_all[bb] == 1)[0]
-
-            for ii in range(p):
-                rwt = row_test_fun(X[s0, ii], X[s1, ii])
-                # Welch test with scipy -> rwt=stats.ttest_ind(X[s0, ii],
-                # X[s1, ii], equal_var=False)
-
-                pval0[bb, ii] = rwt.pvalue
-
-    # Step 2: sort each column
-    pval0 = np.sort(pval0, axis=1)
-
-    return pval0
-
-
-def get_permuted_p_values_general(X, labels, B=100):
+def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by repeated permutation of class labels.
@@ -99,9 +22,16 @@ def get_permuted_p_values_general(X, labels, B=100):
         numpy array of size [n,p], containing n observations of p variables
         (hypotheses)
     labels : array-like of shape (n,)
-        numpy array of size [n], containing n values of a given variable
+        numpy array of size [n], containing n values in {0, 1}, each of them
+        specifying the column indices of the first and the second sample.
     B : int
         number of permutations to be performed (default=100)
+    row_test_fun : function
+        testing function with the same I/O as 'stats.ttest_ind' (default).
+        Specifically, must have two lists as inputs (or 1d np.arrays) for
+        thecompared data, and the resulting pvalue must be accessed in
+        '[test].pvalue' Eligible functions are for instance "stats.ks_2samp",
+        "stats.bartlett", "stats.ranksums", "stats.kruskal"
 
     Returns
     -------
@@ -120,26 +50,36 @@ def get_permuted_p_values_general(X, labels, B=100):
     """
 
     # Init
-
     n, p = X.shape
 
     # Step 1: calculate $p$-values for B permutations of the class assignments
 
     # 1.1: Intialise all vectors and matrices
-    shuffled_categ_current = labels.copy()
+    labels_shuffled = labels.copy()
 
-    shuffled_categ_all = np.zeros([B, n])
+    labels_shuffled_all = np.zeros((B, n))
     for bb in range(B):
-        np.random.shuffle(shuffled_categ_current)
-        shuffled_categ_all[bb] = shuffled_categ_current
+        np.random.shuffle(labels_shuffled)
+        labels_shuffled_all[bb] = labels_shuffled
 
     # 1.2: calculate the p-values
     pval0 = np.zeros([B, p])
 
-    # row Welch Tests (parallelized)
-    for bb in range(B):
-        permuted_test_result = row_welch_tests(X, shuffled_categ_all[bb])
-        pval0[bb] = permuted_test_result['p_value']
+    if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
+        for bb in range(B):
+            permuted_test_result = row_welch_tests(X, labels_shuffled_all[bb])
+            pval0[bb] = permuted_test_result['p_value']
+    else:                     # standard scipy tests
+        for bb in range(B):
+            s0 = np.where(labels_shuffled_all[bb] == 0)[0]
+            s1 = np.where(labels_shuffled_all[bb] == 1)[0]
+
+            for ii in range(p):
+                rwt = row_test_fun(X[s0, ii], X[s1, ii])
+                # Welch test with scipy -> rwt=stats.ttest_ind(X[s0, ii],
+                # X[s1, ii], equal_var=False)
+
+                pval0[bb, ii] = rwt.pvalue
 
     # Step 2: sort each column
     pval0 = np.sort(pval0, axis=1)
@@ -164,7 +104,7 @@ def get_permuted_p_values_one_sample(X, B=100):
     Returns
     -------
 
-    pva0 : array-like of shape (B, p)
+    pval0 : array-like of shape (B, p)
         A numpy array of size [B,p], whose entry i,j corresponds to
         p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
         (section 4.5) [1]_
@@ -181,7 +121,7 @@ def get_permuted_p_values_one_sample(X, B=100):
     n, p = X.shape
 
     # intialise p-values
-    pval0 = np.zeros([B, p])
+    pval0 = np.zeros((B, p))
 
     for b in range(B):
         X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
@@ -194,7 +134,7 @@ def get_permuted_p_values_one_sample(X, B=100):
     return pval0
 
 
-def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
+def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     """Get pivotal statistic
 
     Parameters
@@ -203,8 +143,8 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
     p0 :  array-like of shape (B, p)
         A numpy array of size [B,p] of null p-values obtained from
         B permutations for p hypotheses.
-    t_inv : function
-        A function with the same I/O as t_inv_linear
+    inverse_template : function
+        A function with the same I/O as inverse_template_linear
     K :  int
         For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
         Automatically set to p if its input value is < 0.
@@ -230,12 +170,13 @@ def get_pivotal_stats(p0, t_inv=t_inv_linear, K=-1):
     # Step 3: apply template function
     # For each feature p, compare sorted permuted p-values to template
     B, p = p0.shape
-    tkInv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
+    tk_inv_all = np.array(
+                    [inverse_template(p0[:, i], i + 1, p) for i in range(p)]).T
 
     if K < 0:
-        K = tkInv_all.shape[1]  # tkInv_all.shape[1] is equal to p
+        K = tk_inv_all.shape[1]  # tkInv_all.shape[1] is equal to p
 
     # Step 4: report min for each row
-    piv_stat = np.min(tkInv_all[:, :K], axis=1)
+    pivotal_stats = np.min(tk_inv_all[:, :K], axis=1)
 
-    return piv_stat
+    return pivotal_stats
