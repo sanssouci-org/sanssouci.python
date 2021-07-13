@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# ROW WELSH TESTS
+# ROW WELCH TESTS
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -82,7 +82,6 @@ def suff_welch_test(mean_x, mean_y, std_x, std_y, n_x, n_y):
     -------
 
     test : dict of float arrays of shape (p,) with
-        Dictionary with elements
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
         p_value: the p-value for the test
@@ -107,7 +106,7 @@ def suff_welch_test(mean_x, mean_y, std_x, std_y, n_x, n_y):
     ((squared_sem_x * squared_sem_x / (n_x - 1)) +\
      ((squared_sem_y * squared_sem_y) / (n_y - 1)))
 
-    # p-value
+    # p-value (two-sided!)
     p_value = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
 
     return {"statistic": stat, "parameter": df, "p_value": p_value}
@@ -137,7 +136,7 @@ def row_welch_tests(X, labels):
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
         p_value: the p-value for the test
-        meanDiff: the log Fold Change between category 0 and 1
+        meanDiff: the difference between means
 
     Notes
     -----
