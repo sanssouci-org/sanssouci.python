@@ -38,8 +38,8 @@ def get_summary_stats(mat, categ):
     res = {}
 
     for cc in cats:
-        ww = np.where(categ[:] == cc)[0]
-        matc = mat[ww, :]
+        ww = np.where(categ == cc)[0]
+        matc = mat[ww]
         sumc = np.sum(matc, axis=0)
         sum2c = np.sum(matc * matc, axis=0)
         nc = ww.shape[0]

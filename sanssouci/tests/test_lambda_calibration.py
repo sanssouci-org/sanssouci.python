@@ -54,32 +54,40 @@ def test_get_pivotal_stat():
     p = 20
     rng = np.random.RandomState(42)
     p0 = np.sort(rng.rand(B, p), 1)
-    t_inv = inverse_linear_template
 
-    piv_stat = get_pivotal_stats(p0, t_inv=t_inv, K=-1)
+    piv_stat = get_pivotal_stats(p0,
+                                 inverse_template=inverse_linear_template)
     assert piv_stat.shape == (B,)
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tk_inv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
+    tk_inv_all = np.array(
+        [inverse_linear_template(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tk_inv_all[:, :p], axis=1))
 
-    piv_stat = get_pivotal_stats(p0, t_inv=inverse_linear_template, K=1)
+    piv_stat = get_pivotal_stats(p0,
+                                 inverse_template=inverse_linear_template, K=1)
     assert piv_stat.shape == (B,)
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tk_inv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
+    tk_inv_all = np.array(
+        [inverse_linear_template(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tk_inv_all[:, :1], axis=1))
 
-    piv_stat = get_pivotal_stats(p0, t_inv=inverse_linear_template, K=p)
+    piv_stat = get_pivotal_stats(p0, inverse_template=inverse_linear_template,
+                                 K=p)
     assert piv_stat.shape == (B,)
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
-    tk_inv_all = np.array([t_inv(p0[:, i], i + 1, p) for i in range(p)]).T
+    tk_inv_all = np.array(
+        [inverse_linear_template(p0[:, i], i + 1, p) for i in range(p)]).T
     assert_array_almost_equal(piv_stat, np.min(tk_inv_all[:, :p], axis=1))
 
-    piv_statB = get_pivotal_stats(p0, t_inv=inverse_linear_template, K=p)
-    piv_statAll = get_pivotal_stats(p0, t_inv=inverse_linear_template, K=-1)
+    piv_statB = get_pivotal_stats(p0, inverse_template=inverse_linear_template,
+                                  K=p)
+    piv_statAll = get_pivotal_stats(p0,
+                                    inverse_template=inverse_linear_template,
+                                    K=-1)
     assert_array_almost_equal(piv_statB, piv_statAll)
