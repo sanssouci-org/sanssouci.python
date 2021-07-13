@@ -46,7 +46,6 @@ def get_summary_stats(X, labels):
         mean_lab = sum_lab / n_lab
         std_lab = np.sqrt((sum_squares_lab -\
                            ((sum_lab * sum_lab) / n_lab)) / (n_lab - 1))
-
         res[lab] = {"sum": sum_lab, "sum2": sum_squares_lab, "n": n_lab,\
                     "mean": mean_lab, "sd": std_lab}
 

@@ -7,7 +7,7 @@ from scipy.stats import beta
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-def t_inv_linear(y, k, m):
+def inverse_linear_template(y, k, m):
     """
     Parameters
     ----------
@@ -28,7 +28,7 @@ def t_inv_linear(y, k, m):
     return y * m / k
 
 
-def t_linear(alpha, k, m):
+def linear_template(alpha, k, m):
     """
 
     Parameters
@@ -48,7 +48,7 @@ def t_linear(alpha, k, m):
     return alpha * np.arange(1, k + 1) / m
 
 
-def t_beta(alpha, k, m):
+def beta_template(alpha, k, m):
     """
 
     Parameters
@@ -69,7 +69,7 @@ def t_beta(alpha, k, m):
                     np.array([m + 1] * k) - np.arange(1, k + 1))
 
 
-def t_inv_beta(y, k, m):
+def inverse_beta_template(y, k, m):
     """
     Parameters
     ----------
