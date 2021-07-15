@@ -39,7 +39,8 @@ def max_fp(p_values, thresholds):
     """
 
     # make sure that thresholds is sorted
-    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) > 0.0001:
+    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
+       > 0.0001:
         thresholds = thresholds[np.argsort(thresholds)]
         print("The input 'thresholds' was not sorted -> this is done now")
 
@@ -53,7 +54,8 @@ def max_fp(p_values, thresholds):
 
     seq_k = np.arange(size)
 
-    # k-FWER control for k>subset_size is useless (will yield bound > subset_size)
+    # k-FWER control for k>subset_size is useless
+    # (will yield bound > subset_size)
     thresholds = thresholds[seq_k]
 
     card = np.zeros(thresholds.shape[0])
@@ -158,7 +160,8 @@ def curve_max_fp(p_values, thresholds):
         p_values = p_values[np.argsort(p_values)]
         print("The input p-values were not sorted -> this is done now")
 
-    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) > 0.0001:
+    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
+       > 0.0001:
         thresholds = thresholds[np.argsort(thresholds)]
         print("The input 'thresholds' were not sorted -> this is done now")
 
@@ -167,7 +170,8 @@ def curve_max_fp(p_values, thresholds):
     kMax = thresholds.shape[0]
 
     if kMax < p:
-        thresholds = np.concatenate((thresholds, thresholds[-1] * np.ones(p - kMax)))
+        thresholds = np.concatenate((thresholds, thresholds[-1] *
+                                    np.ones(p - kMax)))
         kMax = thresholds.shape[0]
 
     K = np.ones(p) * (kMax)
@@ -200,8 +204,8 @@ def curve_max_fp(p_values, thresholds):
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
     max_fp_[ww] = np.min(np.concatenate(((ww + 1 - cA).reshape(1, -1),
-                                      (K[ww]).reshape(1, -1)),
-                                     axis=0),
-                      axis=0)
+                                        (K[ww]).reshape(1, -1)),
+                                        axis=0),
+                         axis=0)
 
     return max_fp_

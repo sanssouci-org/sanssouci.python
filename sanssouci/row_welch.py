@@ -44,9 +44,9 @@ def get_summary_stats(X, labels):
         sum_squares_lab = np.sum(X_lab * X_lab, axis=0)
         n_lab = where_lab.shape[0]
         mean_lab = sum_lab / n_lab
-        std_lab = np.sqrt((sum_squares_lab -\
+        std_lab = np.sqrt((sum_squares_lab -
                            ((sum_lab * sum_lab) / n_lab)) / (n_lab - 1))
-        res[lab] = {"sum": sum_lab, "sum2": sum_squares_lab, "n": n_lab,\
+        res[lab] = {"sum": sum_lab, "sum2": sum_squares_lab, "n": n_lab,
                     "mean": mean_lab, "sd": std_lab}
 
     return res
@@ -102,8 +102,8 @@ def suff_welch_test(mean_x, mean_y, std_x, std_y, n_x, n_y):
 
     # approximate degrees of freedom (Welch-Satterthwaite)
     df = squared_sem * squared_sem /\
-    ((squared_sem_x * squared_sem_x / (n_x - 1)) +\
-     ((squared_sem_y * squared_sem_y) / (n_y - 1)))
+        ((squared_sem_x * squared_sem_x / (n_x - 1)) +
+         ((squared_sem_y * squared_sem_y) / (n_y - 1)))
 
     # p-value (two-sided!)
     p_value = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
@@ -157,7 +157,7 @@ def row_welch_tests(X, labels):
     X = sstats[1]
 
     welch = suff_welch_test(X["mean"], Y["mean"], X["sd"],
-                          Y["sd"], X["n"], Y["n"])
+                            Y["sd"], X["n"], Y["n"])
     welch["meanDiff"] = X["mean"] - Y["mean"]
 
     return welch
