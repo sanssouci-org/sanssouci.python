@@ -38,11 +38,10 @@ def get_summary_stats(X, labels):
     res = {}
 
     for lab in labels_set:
-        where_lab = np.where(labels == lab)[0]
         X_lab = X[labels == lab]
         sum_lab = np.sum(X_lab, axis=0)
         sum_squares_lab = np.sum(X_lab * X_lab, axis=0)
-        n_lab = where_lab.shape[0]
+        n_lab = np.sum(labels == lab)
         mean_lab = sum_lab / n_lab
         std_lab = np.sqrt((sum_squares_lab -
                            ((sum_lab * sum_lab) / n_lab)) / (n_lab - 1))
