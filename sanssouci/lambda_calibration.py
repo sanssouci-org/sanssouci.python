@@ -55,24 +55,24 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     # Step 1: calculate $p$-values for B permutations of the class assignments
 
     # 1.1: Intialise all vectors and matrices
-    labels_shuffled = labels.copy()
+    shuffled_labels = labels.copy()
 
-    labels_shuffled_all = np.zeros((B, n))
+    all_shuffled_labels = np.zeros((B, n))
     for bb in range(B):
-        np.random.shuffle(labels_shuffled)
-        labels_shuffled_all[bb] = labels_shuffled
+        np.random.shuffle(shuffled_labels)
+        all_shuffled_labels[bb] = shuffled_labels
 
     # 1.2: calculate the p-values
     pval0 = np.zeros([B, p])
 
     if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
         for bb in range(B):
-            permuted_test_result = row_welch_tests(X, labels_shuffled_all[bb])
+            permuted_test_result = row_welch_tests(X, all_shuffled_labels[bb])
             pval0[bb] = permuted_test_result['p_value']
     else:                     # standard scipy tests
         for bb in range(B):
-            s0 = np.where(labels_shuffled_all[bb] == 0)[0]
-            s1 = np.where(labels_shuffled_all[bb] == 1)[0]
+            s0 = np.where(all_shuffled_labels[bb] == 0)[0]
+            s1 = np.where(all_shuffled_labels[bb] == 1)[0]
 
             for ii in range(p):
                 rwt = row_test_fun(X[s0, ii], X[s1, ii])
