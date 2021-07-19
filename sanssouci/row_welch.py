@@ -39,7 +39,7 @@ def get_summary_stats(X, labels):
 
     for lab in labels_set:
         where_lab = np.where(labels == lab)[0]
-        X_lab = X[where_lab, :]
+        X_lab = X[labels == lab]
         sum_lab = np.sum(X_lab, axis=0)
         sum_squares_lab = np.sum(X_lab * X_lab, axis=0)
         n_lab = where_lab.shape[0]
@@ -105,7 +105,7 @@ def suff_welch_test(mean_x, mean_y, std_x, std_y, n_x, n_y):
         ((squared_sem_x * squared_sem_x / (n_x - 1)) +
          ((squared_sem_y * squared_sem_y) / (n_y - 1)))
 
-    # p-value (two-sided!)
+    # two-sided p-value
     p_value = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
 
     return {"statistic": stat, "parameter": df, "p_value": p_value}
@@ -151,10 +151,10 @@ def row_welch_tests(X, labels):
 
     """
 
-    sstats = get_summary_stats(X, labels)
+    summary_stats = get_summary_stats(X, labels)
 
-    Y = sstats[0]
-    X = sstats[1]
+    Y = summary_stats[0]
+    X = summary_stats[1]
 
     welch = suff_welch_test(X["mean"], Y["mean"], X["sd"],
                             Y["sd"], X["n"], Y["n"])

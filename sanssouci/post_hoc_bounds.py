@@ -39,15 +39,15 @@ def max_fp(p_values, thresholds):
     """
 
     # make sure that thresholds is sorted
-    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
+    if np.linalg.norm(thresholds - np.sort(thresholds)) \
        > 0.0001:
-        thresholds = thresholds[np.argsort(thresholds)]
+        thresholds = np.sort(thresholds)
         print("The input 'thresholds' was not sorted -> this is done now")
 
     # do the job
     subset_size = p_values.shape[0]
-    K = thresholds.shape[0]
-    size = np.min([subset_size, K])
+    template_size = thresholds.shape[0]
+    size = np.min([subset_size, template_size])
 
     if size < 1:
         return 0
@@ -167,24 +167,24 @@ def curve_max_fp(p_values, thresholds):
 
     # do the job
     p = p_values.shape[0]
-    kMax = thresholds.shape[0]
+    k_max = thresholds.shape[0]
 
-    if kMax < p:
+    if k_max < p:
         thresholds = np.concatenate((thresholds, thresholds[-1] *
-                                    np.ones(p - kMax)))
-        kMax = thresholds.shape[0]
+                                    np.ones(p - k_max)))
+        k_max = thresholds.shape[0]
 
-    K = np.ones(p) * (kMax)
+    K = np.ones(p) * (k_max)
     # K[i] = number of k/ T[i] <= s[k] = BB in 'Mein2006'
-    Z = np.ones(kMax) * (p)
+    Z = np.ones(k_max) * (p)
     # Z[k] = number of i/ T[i] >  s[k] = cardinal of R_k
     # 'K' and 'Z' are initialized to their largest possible value,
-    #       ie 'p' and 'kMax', respectively
+    #       ie 'p' and 'k_max', respectively
 
     kk = 0
     ii = 0
 
-    while (kk < kMax) and (ii < p):
+    while (kk < k_max) and (ii < p):
         if thresholds[kk] >= p_values[ii]:
             K[ii] = kk
             ii += 1
@@ -194,7 +194,7 @@ def curve_max_fp(p_values, thresholds):
 
     max_fp_ = np.zeros(p)
     ww = np.where(K > 0)[0]
-    A = Z - np.arange(0, kMax)
+    A = Z - np.arange(0, k_max)
 
     K_ww = K[ww].astype(np.int)
     cummax_A = A.copy()
