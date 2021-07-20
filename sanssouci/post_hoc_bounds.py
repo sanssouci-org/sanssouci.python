@@ -77,7 +77,7 @@ def min_tp(p_values, thresholds):
     thresholds : 1D numpy.array
         A 1D numpy array of non-decreasing k-FWER-controlling thresholds
 
-    Retursubset_size
+    Returns
     -------
 
     ndarray or scalar :
@@ -193,19 +193,19 @@ def curve_max_fp(p_values, thresholds):
             kk += 1
 
     max_fp_ = np.zeros(p)
-    ww = np.where(K > 0)[0]
     A = Z - np.arange(0, k_max)
 
-    K_ww = K[ww].astype(np.int)
+    K_ww = K[K > 0].astype(np.int)
     cummax_A = A.copy()
     for i in range(1, cummax_A.shape[0]):
         cummax_A[i] = np.max([cummax_A[i - 1], cummax_A[i]])
 
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
-    max_fp_[ww] = np.min(np.concatenate(((ww + 1 - cA).reshape(1, -1),
-                                        (K[ww]).reshape(1, -1)),
-                                        axis=0),
-                         axis=0)
+    max_fp_[K > 0] = np.min(np.concatenate((
+                                    (np.array(K > 0) + 1 - cA).reshape(1, -1),
+                                    (K[K > 0]).reshape(1, -1)),
+                                    axis=0),
+                            axis=0)
 
     return max_fp_
