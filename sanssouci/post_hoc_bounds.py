@@ -21,7 +21,7 @@ def max_fp(p_values, thresholds):
     Returns
     -------
 
-    ndarray or scalar :
+    scalar :
         A post hoc upper bound on the number of false discoveries in the
         selection
 
@@ -80,7 +80,7 @@ def min_tp(p_values, thresholds):
     Returns
     -------
 
-    ndarray or scalar :
+    scalar :
         A Lower bound on the number of true discoveries in the selection
 
     References
