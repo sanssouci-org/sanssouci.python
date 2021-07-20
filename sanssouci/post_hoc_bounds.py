@@ -193,6 +193,7 @@ def curve_max_fp(p_values, thresholds):
             kk += 1
 
     max_fp_ = np.zeros(p)
+    ww = np.where(K > 0)[0]
     A = Z - np.arange(0, k_max)
 
     K_ww = K[K > 0].astype(np.int)
@@ -203,7 +204,8 @@ def curve_max_fp(p_values, thresholds):
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
     max_fp_[K > 0] = np.min(
-        np.concatenate((((K > 0) + 1 - cA).reshape(1, -1),
-                        (K[K > 0]).reshape(1, -1))), axis=0)
+        np.concatenate(((ww + 1 - cA).reshape(1, -1),
+                        (K[K > 0]).reshape(1, -1)),
+                       axis=0), axis=0)
 
     return max_fp_
