@@ -66,20 +66,20 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     pval0 = np.zeros([B, p])
 
     if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
-        for bb in range(B):
-            permuted_test_result = row_welch_tests(X, all_shuffled_labels[bb])
-            pval0[bb] = permuted_test_result['p_value']
+        for b in range(B):
+            permuted_test_result = row_welch_tests(X, all_shuffled_labels[b])
+            pval0[b] = permuted_test_result['p_value']
     else:                     # standard scipy tests
-        for bb in range(B):
-            s0 = np.where(all_shuffled_labels[bb] == 0)[0]
-            s1 = np.where(all_shuffled_labels[bb] == 1)[0]
+        for b in range(B):
+            s0 = np.where(all_shuffled_labels[b] == 0)[0]
+            s1 = np.where(all_shuffled_labels[b] == 1)[0]
 
             for ii in range(p):
                 rwt = row_test_fun(X[s0, ii], X[s1, ii])
                 # Welch test with scipy -> rwt=stats.ttest_ind(X[s0, ii],
                 # X[s1, ii], equal_var=False)
 
-                pval0[bb, ii] = rwt.pvalue
+                pval0[b, ii] = rwt.pvalue
 
     # Step 2: sort each column
     pval0 = np.sort(pval0, axis=1)
