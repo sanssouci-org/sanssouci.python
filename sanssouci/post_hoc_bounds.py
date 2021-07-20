@@ -203,8 +203,8 @@ def curve_max_fp(p_values, thresholds):
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
     max_fp_[K > 0] = np.min(
-            np.concatenate(((np.array(K > 0) + 1 - cA).reshape(1, -1),
-                            (K[K > 0]).reshape(1, -1)),
-                           axis=0), axis=0)
+        np.concatenate((((K > 0) + 1 - cA).reshape(1, -1),
+                        (K[K > 0]).reshape(1, -1)),
+                       axis=0), axis=0)
 
     return max_fp_
