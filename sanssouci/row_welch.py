@@ -2,12 +2,12 @@ import numpy as np
 from scipy import stats
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# ROW WELSH TESTS
+# ROW WELCH TESTS
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-def get_summary_stats(mat, categ):
+def get_summary_stats(X, labels):
     """
     Convert a matrix of observations labelled into categories into summary
     statistics for each category
@@ -18,11 +18,11 @@ def get_summary_stats(mat, categ):
     Parameters
     ----------
 
-    mat : array-like of shape (n, p)
+    X : array-like of shape (n, p)
         Numpy array matrix whose columns correspond to the p variables
         and rows to the n observations
-    categ :  array-like of shape (n, )
-        A numpy array of size n representing the category of each
+    labels :  array-like of shape (n, )
+        A numpy array of size n representing the label of each
         observation, in {0, 1}
 
     Returns
@@ -33,54 +33,53 @@ def get_summary_stats(mat, categ):
         each category
     """
 
-    cats = set(categ)
+    labels_set = set(labels)
 
     res = {}
 
-    for cc in cats:
-        ww = np.where(categ[:] == cc)[0]
-        matc = mat[ww, :]
-        sumc = np.sum(matc, axis=0)
-        sum2c = np.sum(matc * matc, axis=0)
-        nc = ww.shape[0]
-        mc = sumc / nc
-        sc = np.sqrt((sum2c - ((sumc * sumc) / nc)) / (nc - 1))
-
-        res[cc] = {"sum": sumc, "sum2": sum2c, "n": nc, "mean": mc, "sd": sc}
+    for lab in labels_set:
+        X_lab = X[labels == lab]
+        sum_lab = np.sum(X_lab, axis=0)
+        sum_squares_lab = np.sum(X_lab * X_lab, axis=0)
+        n_lab = np.sum(labels == lab)
+        mean_lab = sum_lab / n_lab
+        std_lab = np.sqrt((sum_squares_lab -
+                           ((sum_lab * sum_lab) / n_lab)) / (n_lab - 1))
+        res[lab] = {"sum": sum_lab, "sum2": sum_squares_lab, "n": n_lab,
+                    "mean": mean_lab, "sd": std_lab}
 
     return res
 
 
-def suff_welch_test(mx, my, sx, sy, nx, ny):
+def suff_welch_test(mean_x, mean_y, std_x, std_y, n_x, n_y):
     """
     Welch test from sufficient statistics
 
     Parameters
     ----------
 
-    mx : array-like
+    mean_x : array-like
         A numeric value or vector, the sample average for condition "x"
-    my : array-like
-        A numeric value or vector of the same length as 'mx', the sample
+    mean_y : array-like
+        A numeric value or vector of the same length as 'mean_x', the sample
         average for condition "y"
-    sx : array-like
-        A numeric value or vector of the same length as 'mx', the standard
+    std_x : array-like
+        A numeric value or vector of the same length as 'mean_x', the standard
         deviation for condition "x"
-    sy : array-like
-        A numeric value or vector of the same length as 'mx', the standard
+    std_y : array-like
+        A numeric value or vector of the same length as 'mean_x', the standard
         deviation for condition "y"
-    nx : array-like
-        A numeric value or vector of the same length as 'mx', the sample
+    n_x : array-like
+        A numeric value or vector of the same length as 'mean_x', the sample
         size for condition "x"
-    ny : array-like
-        A numeric value or vector of the same length as 'mx', the sample
+    n_y : array-like
+        A numeric value or vector of the same length as 'mean_x', the sample
         size for condition "y"
 
     Returns
     -------
 
     test : dict of float arrays of shape (p,) with
-        Dictionary with elements
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
         p_value: the p-value for the test
@@ -92,25 +91,26 @@ def suff_welch_test(mx, my, sx, sy, nx, ny):
     to "greater" or "less" as in the original R code.
     """
 
-    # pre-computations
-    sse_x = (sx * sx) / nx
-    sse_y = (sy * sy) / ny
-    sse = sse_x + sse_y
-    sse2 = sse * sse
+    # pre-computations: squared standard error of the mean (sem)
+    squared_sem_x = (std_x * std_x) / n_x
+    squared_sem_y = (std_y * std_y) / n_y
+    squared_sem = squared_sem_x + squared_sem_y
 
     # test statistic
-    stat = (mx - my) / np.sqrt(sse)
+    stat = (mean_x - mean_y) / np.sqrt(squared_sem)
 
     # approximate degrees of freedom (Welch-Satterthwaite)
-    df = sse2 / ((sse_x * sse_x / (nx - 1)) + ((sse_y * sse_y) / (ny - 1)))
+    df = squared_sem * squared_sem /\
+        ((squared_sem_x * squared_sem_x / (n_x - 1)) +
+         ((squared_sem_y * squared_sem_y) / (n_y - 1)))
 
-    # p-value
-    pval = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
+    # two-sided p-value
+    p_value = 2 * (1 - stats.t.cdf(np.abs(stat), df=df))
 
-    return {"statistic": stat, "parameter": df, "p_value": pval}
+    return {"statistic": stat, "parameter": df, "p_value": p_value}
 
 
-def row_welch_tests(mat, categ):
+def row_welch_tests(X, labels):
     """
     Welch t-tests for each column of a matrix, intended to be speed efficient
 
@@ -120,10 +120,10 @@ def row_welch_tests(mat, categ):
     Parameters
     ----------
 
-    mat : array-like of shape (n, p)
+    X : array-like of shape (n, p)
         Numpy array matrix whose columns correspond to the p variables
          and rows to the n observations
-    categ :  array-like of shape (n, )
+    labels :  array-like of shape (n, )
         A numpy array of size n representing the category of each
         observation, in {0, 1}
 
@@ -134,7 +134,7 @@ def row_welch_tests(mat, categ):
         statistic: the value of the t-statistic
         parameter:  the degrees of freedom for the t-statistic
         p_value: the p-value for the test
-        meanDiff: the log Fold Change between category 0 and 1
+        meanDiff: the difference between means
 
     Notes
     -----
@@ -150,16 +150,13 @@ def row_welch_tests(mat, categ):
 
     """
 
-    # n = mat.shape[0]
-    # p = mat.shape[1]
+    summary_stats = get_summary_stats(X, labels)
 
-    sstats = get_summary_stats(mat, categ)
+    Y = summary_stats[0]
+    X = summary_stats[1]
 
-    Y = sstats[0]
-    X = sstats[1]
+    welch = suff_welch_test(X["mean"], Y["mean"], X["sd"],
+                            Y["sd"], X["n"], Y["n"])
+    welch["meanDiff"] = X["mean"] - Y["mean"]
 
-    swt = suff_welch_test(X["mean"], Y["mean"], X["sd"],
-                          Y["sd"], X["n"], Y["n"])
-    swt["meanDiff"] = X["mean"] - Y["mean"]
-
-    return swt
+    return welch

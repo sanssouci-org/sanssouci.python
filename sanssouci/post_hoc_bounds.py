@@ -6,7 +6,7 @@ import numpy as np
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-def max_fp(p_values, thr):
+def max_fp(p_values, thresholds):
     """
     Upper bound for the number of false discoveries in a selection
 
@@ -15,13 +15,13 @@ def max_fp(p_values, thr):
 
     p_values : 1D numpy.array
         A 1D numpy array of p-values for the selected items
-    thr : 1D numpy.array
+    thresholds : 1D numpy.array
         A 1D numpy array of non-decreasing k-FWER-controlling thresholds
 
     Returns
     -------
 
-    ndarray or scalar :
+    scalar :
         A post hoc upper bound on the number of false discoveries in the
         selection
 
@@ -38,33 +38,34 @@ def max_fp(p_values, thr):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    # make sure that thr is sorted
-    if np.linalg.norm(thr - thr[np.argsort(thr)]) > 0.0001:
-        thr = thr[np.argsort(thr)]
-        print("The input thr was not sorted -> this is done now")
+    # make sure that thresholds is sorted
+    if np.linalg.norm(thresholds - np.sort(thresholds)) \
+       > 0.0001:
+        thresholds = np.sort(thresholds)
+        print("The input 'thresholds' was not sorted -> this is done now")
 
     # do the job
-    nS = p_values.shape[0]
-    K = thr.shape[0]
-    size = np.min([nS, K])
+    subset_size = p_values.shape[0]
+    template_size = thresholds.shape[0]
+    size = np.min([subset_size, template_size])
 
     if size < 1:
         return 0
 
-    seqK = np.arange(size)
+    seq_k = np.arange(size)
 
-    # k-FWER control for k>nS is useless (will yield bound > nS)
-    thr = thr[seqK]
+    # k-FWER control for k>subset_size is useless
+    # (will yield bound > subset_size)
+    thresholds = thresholds[seq_k]
 
-    card = np.zeros(thr.shape[0])
-    for i in range(thr.shape[0]):
-        card[i] = np.sum(p_values > thr[i])
-    # card<-sapply(thr,FUN=function(thr){sum(p_values > thr)})
+    card = np.zeros(thresholds.shape[0])
+    for i in range(thresholds.shape[0]):
+        card[i] = np.sum(p_values > thresholds[i])
 
-    return np.min([nS, (card + seqK).min()])
+    return np.min([subset_size, (card + seq_k).min()])
 
 
-def min_tp(p_values, thr):
+def min_tp(p_values, thresholds):
     """
     Lower bound for the number of true discoveries in a selection
 
@@ -73,13 +74,13 @@ def min_tp(p_values, thr):
 
     p_values : 1D numpy.array
         A 1D numpy array of p-values for the selected items
-    thr : 1D numpy.array
+    thresholds : 1D numpy.array
         A 1D numpy array of non-decreasing k-FWER-controlling thresholds
 
     Returns
     -------
 
-    ndarray or scalar :
+    scalar :
         A Lower bound on the number of true discoveries in the selection
 
     References
@@ -90,10 +91,10 @@ def min_tp(p_values, thr):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    return p_values.shape[0] - max_fp(p_values, thr)
+    return p_values.shape[0] - max_fp(p_values, thresholds)
 
 
-def min_tdp(p_values, thr):
+def min_tdp(p_values, thresholds):
     """Lower bound for the proportion of true discoveries in a selection
     Lower bound for the proportion of true discoveries in a selection
 
@@ -102,7 +103,7 @@ def min_tdp(p_values, thr):
 
     p_values : 1D numpy.array
         A 1D numpy array of p-values for the selected items
-    thr : 1D numpy.array
+    thresholds : 1D numpy.array
         A 1D numpy array of non-decreasing k-FWER-controlling thresholds
 
     Returns
@@ -121,10 +122,10 @@ def min_tdp(p_values, thr):
     if len(p_values) == 0:
         return 0
     else:
-        return min_tp(p_values, thr) / len(p_values)
+        return min_tp(p_values, thresholds) / len(p_values)
 
 
-def curve_max_fp(p_values, thr):
+def curve_max_fp(p_values, thresholds):
     """
     Upper bound for the number of false discoveries among most
     significant items.
@@ -134,7 +135,7 @@ def curve_max_fp(p_values, thr):
 
     p_values : 1D numpy.array
         A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
-    thr : 1D numpy.array
+    thresholds : 1D numpy.array
         A 1D numpy array  of $K$ JER-controlling thresholds,
         sorted non-decreasingly
 
@@ -154,55 +155,57 @@ def curve_max_fp(p_values, thr):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    #  make sure that p_values and thr are sorted
+    #  make sure that p_values and thresholds are sorted
     if np.linalg.norm(p_values - p_values[np.argsort(p_values)]) > 0.0001:
         p_values = p_values[np.argsort(p_values)]
         print("The input p-values were not sorted -> this is done now")
 
-    if np.linalg.norm(thr - thr[np.argsort(thr)]) > 0.0001:
-        thr = thr[np.argsort(thr)]
-        print("The input thr were not sorted -> this is done now")
+    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
+       > 0.0001:
+        thresholds = thresholds[np.argsort(thresholds)]
+        print("The input 'thresholds' were not sorted -> this is done now")
 
     # do the job
     p = p_values.shape[0]
-    kMax = thr.shape[0]
+    k_max = thresholds.shape[0]
 
-    if kMax < p:
-        thr = np.concatenate((thr, thr[-1] * np.ones(p - kMax)))
-        kMax = thr.shape[0]
+    if k_max < p:
+        thresholds = np.concatenate((thresholds, thresholds[-1] *
+                                    np.ones(p - k_max)))
+        k_max = thresholds.shape[0]
 
-    K = np.ones(p) * (kMax)
+    K = np.ones(p) * (k_max)
     # K[i] = number of k/ T[i] <= s[k] = BB in 'Mein2006'
-    Z = np.ones(kMax) * (p)
+    Z = np.ones(k_max) * (p)
     # Z[k] = number of i/ T[i] >  s[k] = cardinal of R_k
     # 'K' and 'Z' are initialized to their largest possible value,
-    #       ie 'p' and 'kMax', respectively
+    #       ie 'p' and 'k_max', respectively
 
     kk = 0
     ii = 0
 
-    while (kk < kMax) and (ii < p):
-        if thr[kk] >= p_values[ii]:
+    while (kk < k_max) and (ii < p):
+        if thresholds[kk] >= p_values[ii]:
             K[ii] = kk
             ii += 1
         else:
             Z[kk] = ii
             kk += 1
 
-    Vbar = np.zeros(p)
-    ww = np.where(K > 0)[0]
-    A = Z - np.arange(0, kMax)
+    max_fp_ = np.zeros(p)
+    indices = np.where(K > 0)[0]
+    A = Z - np.arange(0, k_max)
 
-    K_ww = K[ww].astype(np.int)
+    K_ww = K[K > 0].astype(np.int)
     cummax_A = A.copy()
     for i in range(1, cummax_A.shape[0]):
         cummax_A[i] = np.max([cummax_A[i - 1], cummax_A[i]])
 
     cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
 
-    Vbar[ww] = np.min(np.concatenate(((ww + 1 - cA).reshape(1, -1),
-                                      (K[ww]).reshape(1, -1)),
-                                     axis=0),
-                      axis=0)
+    max_fp_[K > 0] = np.min(
+        np.concatenate(((indices + 1 - cA).reshape(1, -1),
+                        (K[K > 0]).reshape(1, -1)),
+                       axis=0), axis=0)
 
-    return Vbar
+    return max_fp_

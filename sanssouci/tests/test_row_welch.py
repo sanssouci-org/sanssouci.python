@@ -10,12 +10,12 @@ def test_get_summary_stats():
     n = 20
     p = 50
     X = rng.randn(n, p)
-    categ = rng.randint(2, size=n)
-    summary = get_summary_stats(X, categ)
+    labels = rng.randint(2, size=n)
+    summary = get_summary_stats(X, labels)
 
     assert isinstance(summary, dict)
     assert len(summary) == 2
-    assert summary.keys() == set(categ)
+    assert summary.keys() == set(labels)
     for key, values in summary.items():
         assert len(values) == 5
         assert isinstance(values, dict)
@@ -54,9 +54,9 @@ def test_row_welch_tests():
     n = 20
     p = 50
     X = rng.randn(n, p)
-    categ = rng.randint(2, size=n)
+    labels = rng.randint(2, size=n)
 
-    welch = row_welch_tests(X, categ)
+    welch = row_welch_tests(X, labels)
 
     assert isinstance(welch, dict)
     assert len(welch) == 4
