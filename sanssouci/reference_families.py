@@ -153,7 +153,7 @@ def quadratic_template(alpha, k, m):
     """
 
     return alpha * np.arange(1, k + 1) / m + \
-        (1-alpha) * np.square(np.arange(1, k + 1) / m)
+        (1 - alpha) * np.square(np.arange(1, k + 1) / m)
 
 
 def inverse_quadratic_template(y, k, m):
