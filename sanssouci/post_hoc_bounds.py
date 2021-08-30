@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -209,3 +210,72 @@ def curve_max_fp(p_values, thresholds):
                        axis=0), axis=0)
 
     return max_fp_
+
+
+def curve_min_tdp(p_values, thresholds):
+    """
+    Lower TDP bounds among most
+    significant items.
+
+    Parameters
+    ----------
+
+    p_values : 1D numpy.array
+        A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
+    thresholds : 1D numpy.array
+        A 1D numpy array  of $K$ JER-controlling thresholds,
+        sorted non-decreasingly
+
+    Returns
+    -------
+
+    numpy.array :
+        A vector of size p giving an joint lower confidence bound on the
+        true discovery proportion among the $k$ most significant items for
+        all k in \{1,\ldots,m\}
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+    p = p_values.shape[0]
+    range = np.arange(1, p + 1)  # use this to shorten following line
+    return (range - curve_max_fp(p_values, thresholds)) / range
+
+
+def find_largest_region(p_values, thresholds, TDP, masker):
+    z_map_ = norm.isf(p_values)
+
+    res = curve_min_tdp(p_values, thresholds)
+    region_size = len(res[res > TDP])
+    pval_cutoff = sorted(p_values)[region_size]
+    z_cutoff_cal = norm.isf(pval_cutoff)
+
+    z_to_plot_cal = np.copy(z_map_)
+    z_to_plot_cal[z_to_plot_cal < z_cutoff_cal] = 0
+    z_unmasked_cal = masker.inverse_transform(z_to_plot_cal)
+
+    return z_unmasked_cal, region_size
+
+
+def compute_hommel_value(z_vals, alpha):
+    """Compute the All-Resolution Inference hommel-value
+    Function taken from nilearn.glm
+    """
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha should be between 0 and 1')
+    z_vals_ = - np.sort(- z_vals)
+    p_vals = norm.sf(z_vals_)
+    n_samples = len(p_vals)
+
+    if len(p_vals) == 1:
+        return p_vals[0] > alpha
+    if p_vals[0] > alpha:
+        return n_samples
+    slopes = (alpha - p_vals[: - 1]) / np.arange(n_samples, 1, -1)
+    slope = np.max(slopes)
+    hommel_value = np.trunc(n_samples + (alpha - slope * n_samples) / slope)
+    return np.minimum(hommel_value, n_samples)
