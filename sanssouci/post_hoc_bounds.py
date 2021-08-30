@@ -252,11 +252,11 @@ def find_largest_region(p_values, thresholds, TDP, masker):
     res = curve_min_tdp(p_values, thresholds)
     region_size = len(res[res > TDP])
     pval_cutoff = sorted(p_values)[region_size]
-    z_cutoff_cal = norm.isf(pval_cutoff)
+    z_cutoff = norm.isf(pval_cutoff)
 
-    z_to_plot_cal = np.copy(z_map_)
-    z_to_plot_cal[z_to_plot_cal < z_cutoff_cal] = 0
-    z_unmasked_cal = masker.inverse_transform(z_to_plot_cal)
+    z_to_plot = np.copy(z_map_)
+    z_to_plot[z_to_plot < z_cutoff] = 0
+    z_unmasked_cal = masker.inverse_transform(z_to_plot)
 
     return z_unmasked_cal, region_size
 
