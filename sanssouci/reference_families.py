@@ -176,4 +176,4 @@ def inverse_quadratic_template(y, k, m):
     if k == m:
         return [1] * len(y)
     else:
-        return (np.array(y) * m ** 2 - k ** 2) / (k * (m-k))
+        return (np.array(y) * m ** 2 - k ** 2) / (k * (m - k))
