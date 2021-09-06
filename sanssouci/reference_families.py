@@ -100,7 +100,7 @@ def regularised_inverse_beta_template(y, k, m, reg=100):
     m : int
         number of hypotheses
     reg : float
-        regularisation factor
+        scaling factor for beta law
 
     Returns
     -------
@@ -113,7 +113,7 @@ def regularised_inverse_beta_template(y, k, m, reg=100):
 
 def regularised_beta_template(alpha, k, m, reg=100):
     """
-
+    Beta template with scaled parameters
     Parameters
     ----------
 
@@ -123,6 +123,8 @@ def regularised_beta_template(alpha, k, m, reg=100):
         number of rejection sets in Beta template
     m : int
         number of hypotheses
+    reg : float
+        scaling factor for beta law
 
     Returns
     -------
@@ -134,14 +136,13 @@ def regularised_beta_template(alpha, k, m, reg=100):
 
 def quadratic_template(alpha, k, m):
     """
+    Linear template with an additional quadratic term
 
     Parameters
     ----------
 
     alpha : float
         confidence level in [0, 1]
-    beta : float
-        quadratic term coefficient
     k : int
         number of rejection sets in linear template
     m : int
