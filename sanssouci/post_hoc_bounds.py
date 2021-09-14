@@ -273,7 +273,7 @@ def find_largest_region(p_values, thresholds, TDP, masker=None):
 
     res = curve_min_tdp(p_values, thresholds)
     region_size = len(res[res > TDP])
-    pval_cutoff = sorted(p_values)[region_size]
+    pval_cutoff = sorted(p_values)[region_size - 1]
     z_cutoff = norm.isf(pval_cutoff)
 
     if masker is not None:
@@ -285,7 +285,7 @@ def find_largest_region(p_values, thresholds, TDP, masker=None):
     return region_size
 
 
-def compute_hommel_value(z_vals, alpha):
+def _compute_hommel_value(z_vals, alpha):
     """Compute the All-Resolution Inference hommel-value
     Function taken from nilearn.glm
     """
