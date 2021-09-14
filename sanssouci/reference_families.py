@@ -89,7 +89,7 @@ def inverse_beta_template(y, k, m):
     return beta.cdf(y, k, m + 1 - k)
 
 
-def regularised_inverse_beta_template(y, k, m, reg=100):
+def _regularised_inverse_beta_template(y, k, m, reg=100):
     """
     Parameters
     ----------
@@ -111,9 +111,10 @@ def regularised_inverse_beta_template(y, k, m, reg=100):
     return beta.cdf(y, k / reg, (m + 1 - k) / reg)
 
 
-def regularised_beta_template(alpha, k, m, reg=100):
+def _regularised_beta_template(alpha, k, m, reg=100):
     """
     Beta template with scaled parameters
+
     Parameters
     ----------
 
@@ -175,6 +176,6 @@ def inverse_quadratic_template(y, k, m):
 
     """
     if k == m:
-        return [1] * len(y)
+        return np.ones(len(y))
     else:
         return (np.array(y) * m ** 2 - k ** 2) / (k * (m - k))

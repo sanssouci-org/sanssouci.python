@@ -246,7 +246,7 @@ def curve_min_tdp(p_values, thresholds):
     return (range - curve_max_fp(p_values, thresholds)) / range
 
 
-def find_largest_region(p_values, thresholds, TDP, masker=None):
+def find_largest_region(p_values, thresholds, tdp, masker=None):
     """
     Find largest FDP controlling region.
 
@@ -258,10 +258,11 @@ def find_largest_region(p_values, thresholds, TDP, masker=None):
     thresholds : 1D numpy.array
         A 1D numpy array  of K JER-controlling thresholds,
         sorted non-decreasingly
-    TDP : float
+    tdp : float
         True discovery proportion
     masker: NiftiMasker
         masker used on current data
+
     Returns
     -------
 
@@ -272,7 +273,7 @@ def find_largest_region(p_values, thresholds, TDP, masker=None):
     z_map_ = norm.isf(p_values)
 
     res = curve_min_tdp(p_values, thresholds)
-    region_size = len(res[res > TDP])
+    region_size = len(res[res > tdp])
     pval_cutoff = sorted(p_values)[region_size - 1]
     z_cutoff = norm.isf(pval_cutoff)
 
