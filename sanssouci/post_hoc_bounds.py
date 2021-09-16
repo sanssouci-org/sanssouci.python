@@ -261,7 +261,7 @@ def find_largest_region(p_values, thresholds, TDP, masker):
     return z_unmasked_cal, region_size
 
 
-def compute_hommel_value(z_vals, alpha):
+def _compute_hommel_value(z_vals, alpha):
     """Compute the All-Resolution Inference hommel-value
     Function taken from nilearn.glm
     """
