@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -134,9 +135,9 @@ def curve_max_fp(p_values, thresholds):
     ----------
 
     p_values : 1D numpy.array
-        A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
+        A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of $K$ JER-controlling thresholds,
+        A 1D numpy array  of K JER-controlling thresholds,
         sorted non-decreasingly
 
     Returns
@@ -144,7 +145,7 @@ def curve_max_fp(p_values, thresholds):
 
     numpy.array :
         A vector of size p giving an joint upper confidence bound on the
-        number of false discoveries among the $k$ most significant items for
+        number of false discoveries among the k most significant items for
         all k in \{1,\ldots,m\}
 
     References
@@ -209,3 +210,97 @@ def curve_max_fp(p_values, thresholds):
                        axis=0), axis=0)
 
     return max_fp_
+
+
+def curve_min_tdp(p_values, thresholds):
+    """
+    Lower TDP bounds among most
+    significant items.
+
+    Parameters
+    ----------
+
+    p_values : 1D numpy.array
+        A 1D numpy array containing all p-values,sorted non-decreasingly
+    thresholds : 1D numpy.array
+        A 1D numpy array  of K JER-controlling thresholds,
+        sorted non-decreasingly
+
+    Returns
+    -------
+
+    numpy.array :
+        A vector of size p giving an joint lower confidence bound on the
+        true discovery proportion among the k most significant items for
+        all k in \{1,\ldots,m\}
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+    p = p_values.shape[0]
+    range = np.arange(1, p + 1)  # use this to shorten following line
+    return (range - curve_max_fp(p_values, thresholds)) / range
+
+
+def find_largest_region(p_values, thresholds, tdp, masker=None):
+    """
+    Find largest FDP controlling region.
+
+    Parameters
+    ----------
+
+    p_values : 1D numpy.array
+        A 1D numpy array containing all p-values,sorted non-decreasingly
+    thresholds : 1D numpy.array
+        A 1D numpy array  of K JER-controlling thresholds,
+        sorted non-decreasingly
+    tdp : float
+        True discovery proportion
+    masker: NiftiMasker
+        masker used on current data
+
+    Returns
+    -------
+
+    z_unmasked_cal : nifti image of z_values of the FDP controlling region
+    region_size : size of TDP controlling region
+
+    """
+    z_map_ = norm.isf(p_values)
+
+    res = curve_min_tdp(p_values, thresholds)
+    region_size = len(res[res > tdp])
+    pval_cutoff = sorted(p_values)[region_size - 1]
+    z_cutoff = norm.isf(pval_cutoff)
+
+    if masker is not None:
+        z_to_plot = np.copy(z_map_)
+        z_to_plot[z_to_plot < z_cutoff] = 0
+        z_unmasked_cal = masker.inverse_transform(z_to_plot)
+        return z_unmasked_cal, region_size
+
+    return region_size
+
+
+def _compute_hommel_value(z_vals, alpha):
+    """Compute the All-Resolution Inference hommel-value
+    Function taken from nilearn.glm
+    """
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha should be between 0 and 1')
+    z_vals_ = - np.sort(- z_vals)
+    p_vals = norm.sf(z_vals_)
+    n_tests = len(p_vals)
+
+    if len(p_vals) == 1:
+        return p_vals[0] > alpha
+    if p_vals[0] > alpha:
+        return n_tests
+    slopes = (alpha - p_vals[: - 1]) / np.arange(n_tests, 1, -1)
+    slope = np.max(slopes)
+    hommel_value = np.trunc(n_tests + (alpha - slope * n_tests) / slope)
+    return np.minimum(hommel_value, n_tests)

@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp, min_tdp
+from sanssouci.post_hoc_bounds import curve_min_tdp, find_largest_region
 
 
 def test_max_fp():
@@ -145,3 +146,40 @@ def test_curve_max_fp():
     assert len(curve_max_fp_) == len(p_values)
     assert all(curve_max_fp_ >= 0)
     assert curve_max_fp_[-1] == max_fp(p_values, thresholds)
+
+
+def test_curve_min_tdp():
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
+    p_values[:20] /= 10 ** 6
+    # try with a scalar
+    thresholds = np.array([1.e-4])
+    curve_min_tdp_ = curve_min_tdp(p_values, thresholds)
+    tns = 20 / np.arange(21, 101)
+    assert isinstance(curve_min_tdp_, np.ndarray)
+    assert all(curve_min_tdp_ == np.append(np.ones(20), tns))
+    assert all(curve_min_tdp_ >= min_tdp(p_values, thresholds))
+    assert len(curve_min_tdp_) == len(p_values)
+    assert all(curve_min_tdp_ >= 0)
+    assert curve_min_tdp_[-1] == min_tdp(p_values, thresholds)
+
+    # try with a sequence
+    thresholds = np.array([1.e-5, 1.e-4, 1.e-3])
+    curve_min_tdp_ = curve_min_tdp(p_values, thresholds)
+    tns = 20 / np.arange(21, 101)
+    assert isinstance(curve_min_tdp_, np.ndarray)
+    assert all(curve_min_tdp_ == np.append(np.ones(20), tns))
+    assert all(curve_min_tdp_ >= min_tdp(p_values, thresholds))
+    assert len(curve_min_tdp_) == len(p_values)
+    assert all(curve_min_tdp_ >= 0)
+    assert curve_min_tdp_[-1] == min_tdp(p_values, thresholds)
+
+
+def test_find_largest_region():
+    p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
+    p_values[:20] /= 10 ** 6
+    thresholds = np.array([1.e-5, 1.e-4, 1.e-3])
+    TDP = 0.9
+    region_size = find_largest_region(p_values, thresholds, TDP)
+    assert region_size >= 0
+    assert region_size == 22
+    assert isinstance(region_size, int)
