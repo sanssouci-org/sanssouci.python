@@ -181,7 +181,10 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def get_pivotal_stats_min(p0, inverse_template=inverse_linear_template, Kmin=0, K=-1):
+def get_pivotal_stats_min(
+    p0, inverse_template=inverse_linear_template,
+    Kmin=0, K=-1
+):
     """Get pivotal statistic
 
     Parameters
@@ -250,19 +253,19 @@ def estimate_jer(template, pval0, Kmin, Kmax):
 def calibrate_jer(alpha, learned_templates, pval0, Kmin, Kmax, min_dist=3):
 
     """
-    For a given risk level, calibrate the method on learned templates
+    For a given risk level, calibrate the method on learned templates.
+    This is equivalent to calibrating using pivotal stats.
     """
 
     B, p = learned_templates.shape
     low, high = 0, B - 1
     while high - low > min_dist:
-        print(low, high)
         mid = int((high + low) / 2)
-        low_val = estimate_jer(learned_templates[low], pval0, Kmin, Kmax) - alpha
-        mid_val = estimate_jer(learned_templates[mid], pval0, Kmin, Kmax) - alpha
-        if mid_val == alpha:
+        low_v = estimate_jer(learned_templates[low], pval0, Kmin, Kmax) - alpha
+        mid_v = estimate_jer(learned_templates[mid], pval0, Kmin, Kmax) - alpha
+        if mid_v == 0:
             return mid
-        if low_val * mid_val < 0:
+        if low_v * mid_v < 0:
             high = mid
         else:
             low = mid
