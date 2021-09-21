@@ -246,23 +246,44 @@ def curve_min_tdp(p_values, thresholds):
     return (range - curve_max_fp(p_values, thresholds)) / range
 
 
-def find_largest_region(p_values, thresholds, tdp, masker):
+def find_largest_region(p_values, thresholds, tdp, masker=None):
     """
-    Find largest region satisfying TDP control
-    """
+    Find largest FDP controlling region.
 
+    Parameters
+    ----------
+
+    p_values : 1D numpy.array
+        A 1D numpy array containing all p-values,sorted non-decreasingly
+    thresholds : 1D numpy.array
+        A 1D numpy array  of K JER-controlling thresholds,
+        sorted non-decreasingly
+    tdp : float
+        True discovery proportion
+    masker: NiftiMasker
+        masker used on current data
+
+    Returns
+    -------
+
+    z_unmasked_cal : nifti image of z_values of the FDP controlling region
+    region_size : size of TDP controlling region
+
+    """
     z_map_ = norm.isf(p_values)
 
     res = curve_min_tdp(p_values, thresholds)
     region_size = len(res[res > tdp])
-    pval_cutoff = sorted(p_values)[region_size]
+    pval_cutoff = sorted(p_values)[region_size - 1]
     z_cutoff = norm.isf(pval_cutoff)
 
-    z_to_plot = np.copy(z_map_)
-    z_to_plot[z_to_plot < z_cutoff] = 0
-    z_unmasked_cal = masker.inverse_transform(z_to_plot)
+    if masker is not None:
+        z_to_plot = np.copy(z_map_)
+        z_to_plot[z_to_plot < z_cutoff] = 0
+        z_unmasked_cal = masker.inverse_transform(z_to_plot)
+        return z_unmasked_cal, region_size
 
-    return z_unmasked_cal, region_size
+    return region_size
 
 
 def _compute_hommel_value(z_vals, alpha):
