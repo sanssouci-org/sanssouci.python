@@ -232,7 +232,7 @@ def get_pivotal_stats_min(
     return pivotal_stats
 
 
-def estimate_jer(template, pval0, Kmin, Kmax):
+def estimate_jer(template, pval0, k_min, k_max):
 
     """
     Compute empirical JER for a given template and permuted p-values
@@ -244,13 +244,13 @@ def estimate_jer(template, pval0, Kmin, Kmax):
     cutoffs = np.searchsorted(template, pval0)
 
     signs = np.sign(id_ranks - cutoffs)
-    sgn_trunc = signs[:, Kmin: Kmax]
+    sgn_trunc = signs[:, k_min: k_max]
     JER = np.sum([np.any(sgn_trunc[perm] >= 0) for perm in range(B)]) / B
 
     return JER
 
 
-def calibrate_jer(alpha, learned_templates, pval0, Kmin, Kmax, min_dist=3):
+def calibrate_jer(alpha, learned_templates, pval0, k_min, k_max, min_dist=3):
 
     """
     For a given risk level, calibrate the method on learned templates.
@@ -261,11 +261,11 @@ def calibrate_jer(alpha, learned_templates, pval0, Kmin, Kmax, min_dist=3):
     low, high = 0, B - 1
     while high - low > min_dist:
         mid = int((high + low) / 2)
-        low_v = estimate_jer(learned_templates[low], pval0, Kmin, Kmax) - alpha
-        mid_v = estimate_jer(learned_templates[mid], pval0, Kmin, Kmax) - alpha
-        if mid_v == 0:
+        lw = estimate_jer(learned_templates[low], pval0, k_min, k_max) - alpha
+        md = estimate_jer(learned_templates[mid], pval0, k_min, k_max) - alpha
+        if md == 0:
             return mid
-        if low_v * mid_v < 0:
+        if lw * md < 0:
             high = mid
         else:
             low = mid

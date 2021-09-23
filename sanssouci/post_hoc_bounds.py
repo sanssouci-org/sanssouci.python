@@ -7,7 +7,7 @@ from scipy.stats import norm
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-def max_fp(p_values, thresholds):
+def max_fp(p_values, thresholds, k_min=0):
     """
     Upper bound for the number of false discoveries in a selection
 
@@ -53,15 +53,17 @@ def max_fp(p_values, thresholds):
     if size < 1:
         return 0
 
+    if k_min > 0:
+        
     seq_k = np.arange(size)
 
     # k-FWER control for k>subset_size is useless
     # (will yield bound > subset_size)
     thresholds = thresholds[seq_k]
 
-    card = np.zeros(thresholds.shape[0])
-    for i in range(thresholds.shape[0]):
-        card[i] = np.sum(p_values > thresholds[i])
+    p_values = np.sort(p_values)
+    cutoffs = np.searchsorted(p_values, thresholds)
+    card = size - cutoffs
 
     return np.min([subset_size, (card + seq_k).min()])
 
