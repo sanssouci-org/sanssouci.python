@@ -7,7 +7,7 @@ from scipy.stats import norm
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-def max_fp(p_values, thresholds, k_min=0):
+def max_fp(p_values, thresholds):
     """
     Upper bound for the number of false discoveries in a selection
 
