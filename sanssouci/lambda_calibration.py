@@ -204,8 +204,9 @@ def estimate_jer(template, pval0, k_max):
 def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
 
     """
-    For a given risk level, calibrate the method on learned templates.
-    This is equivalent to calibrating using pivotal stats.
+    For a given risk level, calibrate the method on learned templates by 
+    dichotomy. This is equivalent to calibrating using pivotal stats but does 
+    not require the availability of a closed form inverse template.
     """
 
     B, p = learned_templates.shape
