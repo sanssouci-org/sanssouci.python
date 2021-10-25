@@ -206,6 +206,26 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
     """
     For a given risk level, calibrate the method on learned templates.
     This is equivalent to calibrating using pivotal stats.
+
+    Parameters
+    ----------
+
+    alpha : float
+        confidence level in [0, 1]
+    learned_templates : array of shape (B', p)
+        learned templates for B' permutations and p voxels
+    pval0 :  array of shape (B, p)
+        permuted p-values
+    k_max : int
+        template size
+    min_dist : int
+        minimum distance to stop iterating dichotomy
+
+    Returns
+    -------
+
+    int : index of template chosen by calibration
+
     """
 
     B, p = learned_templates.shape
