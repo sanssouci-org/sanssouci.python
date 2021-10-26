@@ -87,7 +87,7 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     return pval0
 
 
-def get_permuted_p_values_one_sample(X, B=100):
+def get_permuted_p_values_one_sample(X, B=100, seed=None):
     """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by sign-flipping (one-sample test).
@@ -116,6 +116,8 @@ def get_permuted_p_values_one_sample(X, B=100):
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
     """
+
+    np.random.seed(seed)
 
     # Init
     n, p = X.shape
@@ -179,3 +181,64 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     pivotal_stats = np.min(tk_inv_all[:, :K], axis=1)
 
     return pivotal_stats
+
+
+def estimate_jer(template, pval0, k_max):
+
+    """
+    Compute empirical JER for a given template and permuted p-values
+    """
+
+    B, p = pval0.shape
+    id_ranks = np.tile(np.arange(0, p), (B, 1))
+
+    cutoffs = np.searchsorted(template, pval0)
+
+    signs = np.sign(id_ranks - cutoffs)
+    sgn_trunc = signs[:, :k_max]
+    JER = np.sum([np.any(sgn_trunc[perm] >= 0) for perm in range(B)]) / B
+
+    return JER
+
+
+def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
+
+    """
+    For a given risk level, calibrate the method on learned templates by
+    dichotomy. This is equivalent to calibrating using pivotal stats but does
+    not require the availability of a closed form inverse template.
+
+    Parameters
+    ----------
+
+    alpha : float
+        confidence level in [0, 1]
+    learned_templates : array of shape (B', p)
+        learned templates for B' permutations and p voxels
+    pval0 :  array of shape (B, p)
+        permuted p-values
+    k_max : int
+        template size
+    min_dist : int
+        minimum distance to stop iterating dichotomy
+
+    Returns
+    -------
+
+    int : index of template chosen by calibration
+
+    """
+
+    B, p = learned_templates.shape
+    low, high = 0, B - 1
+    while high - low > min_dist:
+        mid = int((high + low) / 2)
+        lw = estimate_jer(learned_templates[low], pval0, k_max) - alpha
+        md = estimate_jer(learned_templates[mid], pval0, k_max) - alpha
+        if md == 0:
+            return mid
+        if lw * md < 0:
+            high = mid
+        else:
+            low = mid
+    return low
