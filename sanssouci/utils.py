@@ -121,7 +121,7 @@ def get_data_driven_template_two_tasks(
     return pval0_quantiles
 
 
-def get_processed_input(task1, task2, collection=1952):
+def get_processed_input(task1, task2, smoothing_fwhm=4, collection=1952):
     """
     Get processed input for Neurovault tasks
     """
@@ -172,7 +172,7 @@ def get_processed_input(task1, task2, collection=1952):
 
     # Mask and compute the difference between the two conditions
 
-    nifti_masker = NiftiMasker(smoothing_fwhm=4)
+    nifti_masker = NiftiMasker(smoothing_fwhm=smoothing_fwhm)
     all_imgs = np.concatenate([images_task1[indices1], images_task2[indices2]])
     nifti_masker.fit(all_imgs)
     fmri_input1 = nifti_masker.transform(images_task1[indices1])
