@@ -10,7 +10,7 @@ from .reference_families import linear_template
 
 
 def get_data_driven_template_one_task(
-     task, B=1000, smoothing_fwhm=4, collection=1952, seed=None):
+    task, B=1000, smoothing_fwhm=4, collection=1952, seed=None):
 
     """
     Get data driven template for a single task (generally vs baseline)
@@ -53,7 +53,7 @@ def get_data_driven_template_one_task(
 
 
 def get_data_driven_template_two_tasks(
-     task1, task2, collection=1952, B=100, seed=None):
+    task1, task2, collection=1952, B=100, seed=None):
     """
     Get data-driven template for task1 vs task2
     """
