@@ -4,21 +4,22 @@ from nilearn.datasets import get_data_dirs
 from scipy import stats
 import os
 import json
-from tqdm import tqdm
-from joblib import Memory
 from .lambda_calibration import get_permuted_p_values_one_sample
 from .lambda_calibration import get_pivotal_stats
 from .reference_families import linear_template
 
 
-def get_data_driven_template_one_task(task, B=1000, smoothing_fwhm=4, seed=None):
+def get_data_driven_template_one_task(
+     task, B=1000, smoothing_fwhm=4, collection=1952, seed=None):
+
     """
     Get data driven template for a single task (generally vs baseline)
     """
 
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
-    data_location = os.path.join(data_path, 'neurovault/collection_1952')
+    data_location_ = os.path.join(data_path, 'neurovault/collection_')
+    data_location = os.path.join(data_location_, str(collection))
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -51,13 +52,15 @@ def get_data_driven_template_one_task(task, B=1000, smoothing_fwhm=4, seed=None)
     return pval0_quantiles
 
 
-def get_data_driven_template_two_tasks(task1, task2, B=100, seed=None):
+def get_data_driven_template_two_tasks(
+     task1, task2, collection=1952, B=100, seed=None):
     """
     Get data-driven template for task1 vs task2
     """
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
-    data_location = os.path.join(data_path, 'neurovault/collection_1952')
+    data_location_ = os.path.join(data_path, 'neurovault/collection_')
+    data_location = os.path.join(data_location_, str(collection))
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -94,14 +97,15 @@ def get_data_driven_template_two_tasks(task1, task2, B=100, seed=None):
 
     # Find subjects that appear in both tasks and retain corresponding indices
 
-    common_subj = sorted(list(set(subjects1) & set(subjects1)))
-    indices1 = [subjects1.index(common_subj[i]) for i in range(len(common_subj))]
-    indices2 = [subjects2.index(common_subj[i]) for i in range(len(common_subj))]
+    common = sorted(list(set(subjects1) & set(subjects1)))
+    indices1 = [subjects1.index(common[i]) for i in range(len(common))]
+    indices2 = [subjects2.index(common[i]) for i in range(len(common))]
 
     # Mask and compute the difference between the two conditions
 
     nifti_masker = NiftiMasker(smoothing_fwhm=4)
-    nifti_masker.fit(np.concatenate([images_task1[indices1], images_task2[indices2]]))
+    all_imgs = np.concatenate([images_task1[indices1], images_task2[indices2]])
+    nifti_masker.fit(all_imgs)
 
     fmri_input1 = nifti_masker.transform(images_task1[indices1])
     fmri_input2 = nifti_masker.transform(images_task2[indices2])
@@ -117,13 +121,14 @@ def get_data_driven_template_two_tasks(task1, task2, B=100, seed=None):
     return pval0_quantiles
 
 
-def get_processed_input(task1, task2):
+def get_processed_input(task1, task2, collection=1952):
     """
     Get processed input for Neurovault tasks
     """
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
-    data_location = os.path.join(data_path, 'neurovault/collection_1952')
+    data_location_ = os.path.join(data_path, 'neurovault/collection_')
+    data_location = os.path.join(data_location_, str(collection))
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -161,14 +166,15 @@ def get_processed_input(task1, task2):
 
     # Find subjects that appear in both tasks and retain corresponding indices
 
-    common_subj = sorted(list(set(subjects1) & set(subjects1)))
-    indices1 = [subjects1.index(common_subj[i]) for i in range(len(common_subj))]
-    indices2 = [subjects2.index(common_subj[i]) for i in range(len(common_subj))]
+    common = sorted(list(set(subjects1) & set(subjects1)))
+    indices1 = [subjects1.index(common[i]) for i in range(len(common))]
+    indices2 = [subjects2.index(common[i]) for i in range(len(common))]
 
     # Mask and compute the difference between the two conditions
 
     nifti_masker = NiftiMasker(smoothing_fwhm=4)
-    nifti_masker.fit(np.concatenate([images_task1[indices1], images_task2[indices2]]))
+    all_imgs = np.concatenate([images_task1[indices1], images_task2[indices2]])
+    nifti_masker.fit(all_imgs)
     fmri_input1 = nifti_masker.transform(images_task1[indices1])
     fmri_input2 = nifti_masker.transform(images_task2[indices2])
 
