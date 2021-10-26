@@ -19,7 +19,7 @@ def get_data_driven_template_one_task(
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
     data_location_ = os.path.join(data_path, 'neurovault/collection_')
-    data_location = os.path.join(data_location_, str(collection))
+    data_location = data_location_ + str(collection)
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -60,7 +60,7 @@ def get_data_driven_template_two_tasks(
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
     data_location_ = os.path.join(data_path, 'neurovault/collection_')
-    data_location = os.path.join(data_location_, str(collection))
+    data_location = data_location_ + str(collection)
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -97,7 +97,7 @@ def get_data_driven_template_two_tasks(
 
     # Find subjects that appear in both tasks and retain corresponding indices
 
-    common = sorted(list(set(subjects1) & set(subjects1)))
+    common = sorted(list(set(subjects1) & set(subjects2)))
     indices1 = [subjects1.index(common[i]) for i in range(len(common))]
     indices2 = [subjects2.index(common[i]) for i in range(len(common))]
 
@@ -128,7 +128,7 @@ def get_processed_input(task1, task2, collection=1952):
     # First, let's find the data and collect all the image paths
     data_path = get_data_dirs()[0]
     data_location_ = os.path.join(data_path, 'neurovault/collection_')
-    data_location = os.path.join(data_location_, str(collection))
+    data_location = data_location_ + str(collection)
     paths = [data_location + '/' + path for path in os.listdir(data_location)]
 
     files_id = []
@@ -166,7 +166,7 @@ def get_processed_input(task1, task2, collection=1952):
 
     # Find subjects that appear in both tasks and retain corresponding indices
 
-    common = sorted(list(set(subjects1) & set(subjects1)))
+    common = sorted(list(set(subjects1) & set(subjects2)))
     indices1 = [subjects1.index(common[i]) for i in range(len(common))]
     indices2 = [subjects2.index(common[i]) for i in range(len(common))]
 
