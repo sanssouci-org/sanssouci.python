@@ -39,11 +39,49 @@ def max_fp(p_values, thresholds):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
+    s = p_values.length()
+    if s == 0:
+        return(0)
+
+    all_max_fp = curve_max_fp(p_values, thresholds)
+    return all_maxFP[s-1]
+
+
+def max_fp_slow(p_values, thresholds):
+    """
+    Upper bound for the number of false discoveries in a selection
+    (slow version)
+
+    Parameters
+    ----------
+
+    p_values : 1D numpy.array
+        A 1D numpy array of p-values for the selected items
+    thresholds : 1D numpy.array
+        A 1D numpy array of non-decreasing k-FWER-controlling thresholds
+
+    Returns
+    -------
+
+    scalar :
+        A post hoc upper bound on the number of false discoveries in the
+        selection
+
+    See Also
+    --------
+
+    sanssouci.min_tp, sanssouci.curve_max_fp
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
     # make sure that thresholds is sorted
-    if np.linalg.norm(thresholds - np.sort(thresholds)) \
-       > 0.0001:
-        thresholds = np.sort(thresholds)
-        print("The input 'thresholds' was not sorted -> this is done now")
+    thresholds = np.sort(thresholds)
 
     # do the job
     subset_size = p_values.shape[0]
@@ -157,14 +195,8 @@ def curve_max_fp(p_values, thresholds):
     """
 
     #  make sure that p_values and thresholds are sorted
-    if np.linalg.norm(p_values - p_values[np.argsort(p_values)]) > 0.0001:
-        p_values = p_values[np.argsort(p_values)]
-        print("The input p-values were not sorted -> this is done now")
-
-    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
-       > 0.0001:
-        thresholds = thresholds[np.argsort(thresholds)]
-        print("The input 'thresholds' were not sorted -> this is done now")
+    p_values = np.sort(p_values)
+    thresholds = np.sort(thresholds)
 
     # do the job
     p = p_values.shape[0]
