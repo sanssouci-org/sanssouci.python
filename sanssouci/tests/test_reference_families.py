@@ -15,6 +15,7 @@ def test_linear_template():
     assert isinstance(t, np.ndarray)
     assert len(t) == k
 
+
 def test_inverse_linear_template():
     p = 20
     rng = np.random.RandomState(42)
