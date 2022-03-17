@@ -6,6 +6,16 @@ from scipy.stats import beta
 from numpy.testing import assert_array_almost_equal
 
 
+def test_linear_template():
+    alpha = .05
+    k = 5
+    m = 10
+    t = linear_template(alpha, k, m)
+    assert_array_almost_equal(t, alpha * np.arange(1, k + 1) / m)
+    assert isinstance(t, np.ndarray)
+    assert len(t) == k
+
+
 def test_inverse_linear_template():
     p = 20
     rng = np.random.RandomState(42)
@@ -22,16 +32,6 @@ def test_inverse_linear_template():
 
     til_full_template = inverse_linear_template(p0, p, p)
     assert_array_almost_equal(til_full_template, p0)
-
-
-def test_linear_template():
-    alpha = .05
-    k = 5
-    m = 10
-    t = linear_template(alpha, k, m)
-    assert_array_almost_equal(t, alpha * np.arange(1, k + 1) / m)
-    assert isinstance(t, np.ndarray)
-    assert len(t) == k
 
 
 def test_beta_template():
