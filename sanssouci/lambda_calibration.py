@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import stats
-
+from joblib import Parallel, delayed
 from .row_welch import row_welch_tests
 from .reference_families import inverse_linear_template
 from .reference_families import linear_template
@@ -127,9 +127,8 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None):
     # intialise p-values
     pval0 = np.zeros((B, p))
 
-    for b in range(B):
-        X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
-        _, pval0[b] = stats.ttest_1samp(X_flipped, 0)
+    pval0 = Parallel(n_jobs=-1)(delayed(
+        _compute_permuted_pvalues)(X, seed=seed) for b in range(B))
 
     # Sort each column
     pval0 = np.sort(pval0, axis=1)
