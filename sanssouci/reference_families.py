@@ -7,6 +7,7 @@ from scipy.stats import beta
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
 def linear_template(alpha, k, m):
     """
 
@@ -25,6 +26,7 @@ def linear_template(alpha, k, m):
     template : array of shape (k,)
     """
     return alpha * np.arange(1, k + 1) / m
+
 
 def inverse_linear_template(y, k, m):
     """
@@ -45,6 +47,7 @@ def inverse_linear_template(y, k, m):
     """
 
     return y * m / k
+
 
 def beta_template(alpha, k, m):
     """
