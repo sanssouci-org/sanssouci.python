@@ -2,7 +2,9 @@ import numpy as np
 from scipy import stats
 
 from .row_welch import row_welch_tests
-from .reference_families import inverse_linear_template, inverse_beta_template
+from .reference_families import inverse_linear_template
+from .reference_families import linear_template
+import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # LAMBDA-CALIBRATION
@@ -135,6 +137,14 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None):
     return pval0
 
 
+def _compute_permuted_pvalues(X, seed=None):
+    np.random.seed(seed)
+    n, p = X.shape
+    X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
+    _, permuted_pvals = stats.ttest_1samp(X_flipped, 0)
+    return permuted_pvals
+
+
 def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     """Get pivotal statistic
 
@@ -201,7 +211,7 @@ def estimate_jer(template, pval0, k_max):
     return JER
 
 
-def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
+def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
 
     """
     For a given risk level, calibrate the method on learned templates by
@@ -231,6 +241,20 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
 
     B, p = learned_templates.shape
     low, high = 0, B - 1
+
+    if estimate_jer(learned_templates[high], pval0, k_max) <= alpha:
+        # check if all learned templates control the JER
+        return high
+
+    if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
+        warnings.warn("No suitable template found; Simes is returned")
+        # check if any learned templates controls the JER
+        # if not, return calibrated Simes
+        piv_stat = get_pivotal_stats(pval0, K=k_max)
+        lambda_quant = np.quantile(piv_stat, alpha)
+        simes_thr = linear_template(lambda_quant, k_max, p)
+        return simes_thr
+
     while high - low > min_dist:
         mid = int((high + low) / 2)
         lw = estimate_jer(learned_templates[low], pval0, k_max) - alpha
@@ -241,4 +265,4 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
             high = mid
         else:
             low = mid
-    return low
+    return learned_templates[low][:k_max]
