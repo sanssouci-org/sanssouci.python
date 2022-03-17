@@ -39,7 +39,7 @@ def max_fp(p_values, thresholds):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    s = p_values.length()
+    s = len(p_values)
     if s == 0:
         return(0)
 
