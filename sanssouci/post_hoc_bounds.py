@@ -44,7 +44,7 @@ def max_fp(p_values, thresholds):
         return(0)
 
     all_max_fp = curve_max_fp(p_values, thresholds)
-    return all_max_fp[s-1]
+    return all_max_fp[s - 1]
 
 
 def max_fp_slow(p_values, thresholds):
