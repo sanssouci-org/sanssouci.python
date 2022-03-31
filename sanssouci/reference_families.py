@@ -7,26 +7,6 @@ from scipy.stats import beta
 # R source code: https://github.com/pneuvial/sanssouci/
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-def inverse_linear_template(y, k, m):
-    """
-    Parameters
-    ----------
-    y : array of floats of shape (B, )
-        values to apply template to
-    k : int
-        index of rejection set in linear template
-    m : int
-        number of hypotheses
-
-    Returns
-    -------
-
-    estimated_template : array of same shape as y
-
-    """
-
-    return y * m / k
-
 
 def linear_template(alpha, k, m):
     """
@@ -46,6 +26,27 @@ def linear_template(alpha, k, m):
     template : array of shape (k,)
     """
     return alpha * np.arange(1, k + 1) / m
+
+
+def inverse_linear_template(y, k, m):
+    """
+    Parameters
+    ----------
+    y : array of floats of shape (B, )
+        values to apply template to
+    k : int
+        index of rejection set in linear template
+    m : int
+        number of hypotheses
+
+    Returns
+    -------
+
+    estimated_template : array of same shape as y
+
+    """
+ 
+    return y * m / k
 
 
 def beta_template(alpha, k, m):

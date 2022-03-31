@@ -135,9 +135,9 @@ def curve_max_fp(p_values, thresholds):
     ----------
 
     p_values : 1D numpy.array
-        A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
+        A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of $K$ JER-controlling thresholds,
+        A 1D numpy array  of K JER-controlling thresholds,
         sorted non-decreasingly
 
     Returns
@@ -145,7 +145,7 @@ def curve_max_fp(p_values, thresholds):
 
     numpy.array :
         A vector of size p giving an joint upper confidence bound on the
-        number of false discoveries among the $k$ most significant items for
+        number of false discoveries among the k most significant items for
         all k in \{1,\ldots,m\}
 
     References
@@ -221,9 +221,9 @@ def curve_min_tdp(p_values, thresholds):
     ----------
 
     p_values : 1D numpy.array
-        A 1D numpy array containing all $p$ p-values,sorted non-decreasingly
+        A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of $K$ JER-controlling thresholds,
+        A 1D numpy array  of K JER-controlling thresholds,
         sorted non-decreasingly
 
     Returns
@@ -231,7 +231,7 @@ def curve_min_tdp(p_values, thresholds):
 
     numpy.array :
         A vector of size p giving an joint lower confidence bound on the
-        true discovery proportion among the $k$ most significant items for
+        true discovery proportion among the k most significant items for
         all k in \{1,\ldots,m\}
 
     References
@@ -294,13 +294,13 @@ def _compute_hommel_value(z_vals, alpha):
         raise ValueError('alpha should be between 0 and 1')
     z_vals_ = - np.sort(- z_vals)
     p_vals = norm.sf(z_vals_)
-    n_samples = len(p_vals)
+    n_tests = len(p_vals)
 
     if len(p_vals) == 1:
         return p_vals[0] > alpha
     if p_vals[0] > alpha:
-        return n_samples
-    slopes = (alpha - p_vals[: - 1]) / np.arange(n_samples, 1, -1)
+        return n_tests
+    slopes = (alpha - p_vals[: - 1]) / np.arange(n_tests, 1, -1)
     slope = np.max(slopes)
-    hommel_value = np.trunc(n_samples + (alpha - slope * n_samples) / slope)
-    return np.minimum(hommel_value, n_samples)
+    hommel_value = np.trunc(n_tests + (alpha - slope * n_tests) / slope)
+    return np.minimum(hommel_value, n_tests)
