@@ -2,6 +2,7 @@ import numpy as np
 from sanssouci.reference_families import inverse_linear_template
 from sanssouci.reference_families import linear_template, beta_template
 from sanssouci.reference_families import inverse_beta_template
+from sanssouci.lambda_calibration import calibrate_jer, get_pivotal_stats
 from scipy.stats import beta
 from numpy.testing import assert_array_almost_equal
 
@@ -58,3 +59,26 @@ def test_inverse_beta_template():
 
     assert isinstance(til, np.ndarray)
     assert til.shape == p0.shape
+
+
+def test_coherence_linear_template():
+    alpha = 0.05
+    B = 100
+    p = 50
+    seed = 42
+    np.random.seed(seed)
+
+    # Calibrate by dichotmy (calibrate_jer) using Simes template
+    alphas = np.linspace(0, 1, 1000)
+    simes_matrix = np.vstack([linear_template(alpha,
+                                              p, p) for alpha in alphas])
+    pval0 = np.random.uniform(size=(B, p))
+    pval0 = np.sort(pval0, axis=1)
+    calibrated_tpl = calibrate_jer(alpha, simes_matrix, pval0, k_max=p)
+
+    # Calibrate using pivotal statistics
+
+    piv_stat = get_pivotal_stats(pval0, K=p)
+    lambda_quant = np.quantile(piv_stat, alpha)
+    np.testing.assert_array_almost_equal(calibrated_tpl[-1],
+                                         lambda_quant, decimal=3)
