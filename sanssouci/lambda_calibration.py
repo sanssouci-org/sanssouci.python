@@ -84,6 +84,29 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
 
 
 def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
+    """
+    Get permutation p-values: Get a matrix of p-values under the null
+    hypothesis obtained by sign-flipping (one-sample test).
+    Parameters
+    ----------
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    B : int
+        number of sign-flippings to be performed (default=100)
+    Returns
+    -------
+    pval0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose rows are sorted increasingly.
+        The entry i,j corresponds to p_{(j)}(g_i.X) with notation of [1]
+        (section 4.5)_
+    References
+    ----------
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
     np.random.seed(seed)
     seeds = np.random.randint(np.iinfo(np.int32).max, size=B)
     n, p = X.shape
@@ -199,6 +222,9 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     int : index of template chosen by calibration
 
     """
+
+    # Sort permuted p-values
+    pval0 = np.sort(pval0, axis=1)
 
     B, p = learned_templates.shape
     low, high = 0, B - 1
