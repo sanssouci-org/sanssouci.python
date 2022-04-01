@@ -12,14 +12,14 @@ import warnings
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-def get_permuted_p_values_one_sample(X, B=100, seed=None):
+def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
     np.random.seed(seed)
     seeds = np.random.randint(np.iinfo(np.int32).max, size=B)
     n, p = X.shape
 
     # intialise p-values
-    pval0 = Parallel(n_jobs=-1)(delayed(
-        _compute_permuted_pvalues)(X, seed=seed_) for seed_ in seeds)
+    pval0 = Parallel(n_jobs=n_jobs)(delayed(
+        _compute_permuted_pvalues_1samp)(X, seed=seed_) for seed_ in seeds)
 
     # Sort each line
     pval0 = np.sort(pval0, axis=1)
@@ -27,7 +27,7 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None):
     return pval0
 
 
-def _compute_permuted_pvalues(X, seed=None):
+def _compute_permuted_pvalues_1samp(X, seed=None):
     np.random.seed(seed)
     n, p = X.shape
     X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
@@ -120,7 +120,7 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     k_max : int
         template size
     min_dist : int
-        minimum distance to stop iterating dichotomy
+        minimum distance to stop iterating dichotomy. Default = 1.
 
     Returns
     -------
@@ -137,7 +137,7 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
         return learned_templates[high][:k_max]
 
     if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
-        warnings.warn("No suitable template found; Simes is returned")
+        warnings.warn("No suitable template found; Simes is used instead")
         # check if any learned templates controls the JER
         # if not, return calibrated Simes
         piv_stat = get_pivotal_stats(pval0, K=k_max)
