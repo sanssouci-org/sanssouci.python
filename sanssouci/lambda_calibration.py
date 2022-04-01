@@ -219,7 +219,7 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     Returns
     -------
 
-    int : index of template chosen by calibration
+    Threshold family chosen by calibration
 
     """
 
