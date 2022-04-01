@@ -12,6 +12,77 @@ import warnings
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
+def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
+    """
+    Get permutation p-values: Get a matrix of p-values under the null
+    hypothesis obtained by repeated permutation of class labels.
+    Parameters
+    ----------
+    X : array-like of shape (n,p)
+        numpy array of size [n,p], containing n observations of p variables
+        (hypotheses)
+    labels : array-like of shape (n,)
+        numpy array of size [n], containing n values in {0, 1}, each of them
+        specifying the column indices of the first and the second sample.
+    B : int
+        number of permutations to be performed (default=100)
+    row_test_fun : function
+        testing function with the same I/O as 'stats.ttest_ind' (default).
+        Specifically, must have two lists as inputs (or 1d np.arrays) for
+        thecompared data, and the resulting pvalue must be accessed in
+        '[test].pvalue' Eligible functions are for instance "stats.ks_2samp",
+        "stats.bartlett", "stats.ranksums", "stats.kruskal"
+    Returns
+    -------
+    pval0 : array-like of shape (B, p)
+        A numpy array of size [B,p], whose entry i,j corresponds to
+        p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
+        (section 4.5) [1]_
+    References
+    ----------
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+
+    # Init
+    n, p = X.shape
+
+    # Step 1: calculate $p$-values for B permutations of the class assignments
+
+    # 1.1: Intialise all vectors and matrices
+    shuffled_labels = labels.copy()
+
+    all_shuffled_labels = np.zeros((B, n))
+    for bb in range(B):
+        np.random.shuffle(shuffled_labels)
+        all_shuffled_labels[bb] = shuffled_labels
+
+    # 1.2: calculate the p-values
+    pval0 = np.zeros([B, p])
+
+    if row_test_fun == row_welch_tests:  # row Welch Tests (parallelized)
+        for b in range(B):
+            permuted_test_result = row_welch_tests(X, all_shuffled_labels[b])
+            pval0[b] = permuted_test_result['p_value']
+    else:                     # standard scipy tests
+        for b in range(B):
+            s0 = np.where(all_shuffled_labels[b] == 0)[0]
+            s1 = np.where(all_shuffled_labels[b] == 1)[0]
+
+            for ii in range(p):
+                rwt = row_test_fun(X[s0, ii], X[s1, ii])
+                # Welch test with scipy -> rwt=stats.ttest_ind(X[s0, ii],
+                # X[s1, ii], equal_var=False)
+
+                pval0[b, ii] = rwt.pvalue
+
+    # Step 2: sort each column
+    pval0 = np.sort(pval0, axis=1)
+
+    return pval0
+
+
 def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
     np.random.seed(seed)
     seeds = np.random.randint(np.iinfo(np.int32).max, size=B)
