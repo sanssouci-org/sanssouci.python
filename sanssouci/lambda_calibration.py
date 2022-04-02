@@ -94,6 +94,8 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
         (hypotheses)
     B : int
         number of sign-flippings to be performed (default=100)
+    n_jobs : int
+        number of CPUs used for computation
     Returns
     -------
     pval0 : array-like of shape (B, p)
@@ -219,7 +221,8 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     Returns
     -------
 
-    Threshold family chosen by calibration
+    thr : list of length k_max
+        Threshold family chosen by calibration
 
     """
 
