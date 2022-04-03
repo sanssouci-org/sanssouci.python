@@ -95,7 +95,7 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
     B : int
         number of sign-flippings to be performed (default=100)
     n_jobs : int
-        number of CPUs used for computation
+        number of CPUs used for computation. Default = 1
     Returns
     -------
     pval0 : array-like of shape (B, p)
