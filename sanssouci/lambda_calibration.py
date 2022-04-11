@@ -239,6 +239,8 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
 
     if estimate_jer(learned_templates[high], pval0, k_max) <= alpha:
         # check if all learned templates control the JER
+        warnings.warn("All templates control the JER:\
+                       choice may be conservative")
         return learned_templates[high][:k_max]
 
     if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
