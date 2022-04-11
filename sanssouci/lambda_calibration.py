@@ -126,6 +126,9 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
 
 
 def _compute_permuted_pvalues_1samp(X, seed=None):
+    """
+    Compute randomized p-values for a single sign-flip of the input data
+    """
     np.random.seed(seed)
     n, p = X.shape
     X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
