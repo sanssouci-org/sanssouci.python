@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import stats
 from joblib import Parallel, delayed
+from sklearn.utils import check_random_state
 from .row_welch import row_welch_tests
 from .reference_families import inverse_linear_template
 from .reference_families import linear_template
@@ -96,6 +97,7 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
         number of sign-flippings to be performed (default=100)
     n_jobs : int
         number of CPUs used for computation. Default = 1
+
     Returns
     -------
     pval0 : array-like of shape (B, p)
@@ -109,8 +111,8 @@ def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    np.random.seed(seed)
-    seeds = np.random.randint(np.iinfo(np.int32).max, size=B)
+    rng = check_random_state(seed)
+    seeds = rng.randint(np.iinfo(np.int32).max, size=B)
     n, p = X.shape
 
     # intialise p-values
