@@ -47,7 +47,7 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     """
 
     # Init
-    n, p = X.shape
+    n, p = X.shape 
 
     # Step 1: calculate $p$-values for B permutations of the class assignments
 
