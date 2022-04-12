@@ -6,8 +6,7 @@ with open("README.md", "r") as readme_file:
 requirements = ["numpy>=1.15.0", "scipy>=1.0.0",
                 "joblib>=1.0.1", "scikit-learn>=0.22"]
 
-release_url = "https://github.com/pneuvial/\
-               sanssouci.python/archive/refs/tags/0.1.0.tar.gz"
+release_url = "bit.ly/3rkbrWR"
 
 setup(
     name="sanssouci",
@@ -17,7 +16,7 @@ setup(
     description="Post hoc inference via multiple testing",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://github.com/sanssouci.python/",
+    url="https://github.com/pneuvial/sanssouci.python/",
     download_url=release_url,
     packages=find_packages(),
     install_requires=requirements,
