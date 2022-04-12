@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy>=1.15.0", "scipy>=1.0.0", "joblib>=1.0.1", "scikit-learn>=0.22"]
+requirements = ["numpy>=1.15.0", "scipy>=1.0.0",
+                "joblib>=1.0.1", "scikit-learn>=0.22"]
 
 release_url = "https://github.com/pneuvial/\
                sanssouci.python/archive/refs/tags/0.1.0.tar.gz"
