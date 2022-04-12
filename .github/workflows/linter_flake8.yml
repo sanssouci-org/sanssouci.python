@@ -6,8 +6,12 @@ name: linter flake8
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'setup.py'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'setup.py'
 
 jobs:
   build:
