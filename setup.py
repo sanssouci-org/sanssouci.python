@@ -8,14 +8,14 @@ requirements = ["numpy>=1.15.0", "scipy>=1.0.0",
 
 setup(
     name="sanssouci",
-    version="0.1.0",
+    version="0.1.1",
     author="Laurent Risser and Pierre Neuvial",
     author_email="pierre.neuvial@math.univ-toulouse.fr",
     description="Post hoc inference via multiple testing",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/pneuvial/sanssouci.python/",
-    download_url="https://github.com/pneuvial/sanssouci.python/archive/refs/tags/0.1.0.tar.gz",
+    download_url="https://github.com/pneuvial/sanssouci.python/archive/refs/tags/0.1.1.tar.gz",
     packages=find_packages(),
     install_requires=requirements,
     classifiers=[
