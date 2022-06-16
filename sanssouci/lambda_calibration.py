@@ -193,7 +193,7 @@ def estimate_jer(template, pval0, k_max):
     B, p = pval0.shape
     id_ranks = np.tile(np.arange(0, p), (B, 1))
 
-    cutoffs = np.searchsorted(template, pval0)
+    cutoffs = np.searchsorted(template, pval0, side='right')
 
     signs = np.sign(id_ranks - cutoffs)
     sgn_trunc = signs[:, :k_max]
