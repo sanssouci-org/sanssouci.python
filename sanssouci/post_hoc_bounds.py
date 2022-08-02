@@ -273,7 +273,7 @@ def find_largest_region(p_values, thresholds, tdp, masker=None):
     z_map_ = norm.isf(p_values)
 
     res = curve_min_tdp(p_values, thresholds)
-    region_size = len(res[res > tdp])
+    region_size = np.max(np.where(res >= tdp)[0])
     pval_cutoff = sorted(p_values)[region_size - 1]
     z_cutoff = norm.isf(pval_cutoff)
 
