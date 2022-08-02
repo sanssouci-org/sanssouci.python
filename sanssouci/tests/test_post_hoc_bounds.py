@@ -182,4 +182,3 @@ def test_find_largest_region():
     region_size = find_largest_region(p_values, thresholds, TDP)
     assert region_size >= 0
     assert region_size == 21
-    assert isinstance(region_size, int)
