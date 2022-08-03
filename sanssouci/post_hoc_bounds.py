@@ -277,10 +277,11 @@ def find_largest_region(p_values, thresholds, tdp, masker=None):
  
     if len(admissible) > 0:
         region_size = np.max(admissible)
+        pval_cutoff = sorted(p_values)[region_size - 1]
     else:
         region_size = 0
+        pval_cutoff = 0
     
-    pval_cutoff = sorted(p_values)[region_size - 1]
     z_cutoff = norm.isf(pval_cutoff)
 
     if masker is not None:
