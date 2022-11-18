@@ -41,7 +41,7 @@ def max_fp(p_values, thresholds):
 
     s = len(p_values)
     if s == 0:
-        return(0)
+        return 0
 
 <<<<<<< HEAD
     all_max_fp = curve_max_fp(p_values, thresholds)
