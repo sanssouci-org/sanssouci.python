@@ -47,63 +47,6 @@ def max_fp(p_values, thresholds):
     return all_max_fp[s - 1]
 
 
-def max_fp_slow(p_values, thresholds):
-    """
-    Upper bound for the number of false discoveries in a selection
-    (slow version)
-
-    Parameters
-    ----------
-
-    p_values : 1D numpy.array
-        A 1D numpy array of p-values for the selected items
-    thresholds : 1D numpy.array
-        A 1D numpy array of non-decreasing k-FWER-controlling thresholds
-
-    Returns
-    -------
-
-    scalar :
-        A post hoc upper bound on the number of false discoveries in the
-        selection
-
-    See Also
-    --------
-
-    sanssouci.min_tp, sanssouci.curve_max_fp
-
-    References
-    ----------
-
-    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
-        confidence bounds on false positives using reference families.
-        Annals of Statistics, 48(3), 1281-1303.
-    """
-
-    # make sure that thresholds is sorted
-    thresholds = np.sort(thresholds)
-
-    # do the job
-    subset_size = p_values.shape[0]
-    template_size = thresholds.shape[0]
-    size = np.min([subset_size, template_size])
-
-    if size < 1:
-        return 0
-
-    seq_k = np.arange(size)
-
-    # k-FWER control for k>subset_size is useless
-    # (will yield bound > subset_size)
-    thresholds = thresholds[seq_k]
-
-    card = np.zeros(thresholds.shape[0])
-    for i in range(thresholds.shape[0]):
-        card[i] = np.sum(p_values > thresholds[i])
-
-    return np.min([subset_size, (card + seq_k).min()])
-
-
 def min_tp(p_values, thresholds):
     """
     Lower bound for the number of true discoveries in a selection
