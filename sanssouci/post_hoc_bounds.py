@@ -146,7 +146,7 @@ def curve_max_fp(p_values, thresholds):
     numpy.array :
         A vector of size p giving an joint upper confidence bound on the
         number of false discoveries among the k most significant items for
-        all k in \{1,\ldots,m\}
+        all k in {1,..,m}
 
     References
     ----------
@@ -232,7 +232,7 @@ def curve_min_tdp(p_values, thresholds):
     numpy.array :
         A vector of size p giving an joint lower confidence bound on the
         true discovery proportion among the k most significant items for
-        all k in \{1,\ldots,m\}
+        all k in {1,.. ,m}
 
     References
     ----------
@@ -274,14 +274,14 @@ def find_largest_region(p_values, thresholds, tdp, masker=None):
 
     res = curve_min_tdp(p_values, thresholds)
     admissible = np.where(res >= tdp)[0]
- 
+
     if len(admissible) > 0:
         region_size = np.max(admissible)
         pval_cutoff = sorted(p_values)[region_size - 1]
     else:
         region_size = 0
         pval_cutoff = 0
-    
+
     z_cutoff = norm.isf(pval_cutoff)
 
     if masker is not None:
