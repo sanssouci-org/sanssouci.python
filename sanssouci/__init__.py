@@ -4,7 +4,7 @@ from .reference_families import (
     beta_template, inverse_beta_template,
     linear_template, inverse_linear_template)
 from .post_hoc_bounds import (
-    max_fp, in_tp, curve_max_fp)
+    max_fp, min_tp, curve_max_fp)
 from .lambda_calibration import (
     get_permuted_p_values,
     get_permuted_p_values_one_sample,
