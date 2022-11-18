@@ -43,30 +43,8 @@ def max_fp(p_values, thresholds):
     if s == 0:
         return 0
 
-<<<<<<< HEAD
     all_max_fp = curve_max_fp(p_values, thresholds)
     return all_max_fp[s - 1]
-=======
-    # do the job
-    subset_size = p_values.shape[0]
-    template_size = thresholds.shape[0]
-    size = np.min([subset_size, template_size])
-
-    if size < 1:
-        return 0
-
-    seq_k = np.arange(size)
-
-    # k-FWER control for k>subset_size is useless
-    # (will yield bound > subset_size)
-    thresholds = thresholds[seq_k]
-
-    card = np.zeros(thresholds.shape[0])
-    for i in range(thresholds.shape[0]):
-        card[i] = np.sum(p_values >= thresholds[i])
-
-    return np.min([subset_size, (card + seq_k).min()])
->>>>>>> main
 
 
 def min_tp(p_values, thresholds):
