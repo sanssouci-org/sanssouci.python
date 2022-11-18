@@ -1,8 +1,11 @@
 import numpy as np
 from scipy import stats
-
+from joblib import Parallel, delayed
+from sklearn.utils import check_random_state
 from .row_welch import row_welch_tests
-from .reference_families import inverse_linear_template, inverse_beta_template
+from .reference_families import inverse_linear_template
+from .reference_families import linear_template
+import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # LAMBDA-CALIBRATION
@@ -14,10 +17,8 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by repeated permutation of class labels.
-
     Parameters
     ----------
-
     X : array-like of shape (n,p)
         numpy array of size [n,p], containing n observations of p variables
         (hypotheses)
@@ -32,18 +33,14 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
         thecompared data, and the resulting pvalue must be accessed in
         '[test].pvalue' Eligible functions are for instance "stats.ks_2samp",
         "stats.bartlett", "stats.ranksums", "stats.kruskal"
-
     Returns
     -------
-
     pval0 : array-like of shape (B, p)
         A numpy array of size [B,p], whose entry i,j corresponds to
         p_{(j)}(g_i.X) with notation of the AoS 2020 paper cited below
         (section 4.5) [1]_
-
     References
     ----------
-
     .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
@@ -87,52 +84,56 @@ def get_permuted_p_values(X, labels, B=100, row_test_fun=stats.ttest_ind):
     return pval0
 
 
-def get_permuted_p_values_one_sample(X, B=100, seed=None):
+def get_permuted_p_values_one_sample(X, B=100, seed=None, n_jobs=1):
     """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by sign-flipping (one-sample test).
-
     Parameters
     ----------
-
     X : array-like of shape (n,p)
         numpy array of size [n,p], containing n observations of p variables
         (hypotheses)
     B : int
         number of sign-flippings to be performed (default=100)
+    n_jobs : int
+        number of CPUs used for computation. Default = 1
 
     Returns
     -------
-
     pval0 : array-like of shape (B, p)
         A numpy array of size [B,p], whose rows are sorted increasingly.
         The entry i,j corresponds to p_{(j)}(g_i.X) with notation of [1]
         (section 4.5)_
-
     References
     ----------
-
     .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    np.random.seed(seed)
-
-    # Init
+    rng = check_random_state(seed)
+    seeds = rng.randint(np.iinfo(np.int32).max, size=B)
     n, p = X.shape
 
     # intialise p-values
-    pval0 = np.zeros((B, p))
+    pval0 = Parallel(n_jobs=n_jobs)(delayed(
+        _compute_permuted_pvalues_1samp)(X, seed=seed_) for seed_ in seeds)
 
-    for b in range(B):
-        X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
-        _, pval0[b] = stats.ttest_1samp(X_flipped, 0)
-
-    # Sort each column
+    # Sort each line
     pval0 = np.sort(pval0, axis=1)
 
     return pval0
+
+
+def _compute_permuted_pvalues_1samp(X, seed=None):
+    """
+    Compute randomized p-values for a single sign-flip of the input data
+    """
+    np.random.seed(seed)
+    n, p = X.shape
+    X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
+    _, permuted_pvals = stats.ttest_1samp(X_flipped, 0)
+    return permuted_pvals
 
 
 def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
@@ -192,7 +193,7 @@ def estimate_jer(template, pval0, k_max):
     B, p = pval0.shape
     id_ranks = np.tile(np.arange(0, p), (B, 1))
 
-    cutoffs = np.searchsorted(template, pval0)
+    cutoffs = np.searchsorted(template, pval0, side='right')
 
     signs = np.sign(id_ranks - cutoffs)
     sgn_trunc = signs[:, :k_max]
@@ -201,7 +202,7 @@ def estimate_jer(template, pval0, k_max):
     return JER
 
 
-def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
+def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
 
     """
     For a given risk level, calibrate the method on learned templates by
@@ -220,25 +221,45 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=3):
     k_max : int
         template size
     min_dist : int
-        minimum distance to stop iterating dichotomy
+        minimum distance to stop iterating dichotomy. Default = 1.
 
     Returns
     -------
 
-    int : index of template chosen by calibration
+    thr : list of length k_max
+        Threshold family chosen by calibration
 
     """
 
+    # Sort permuted p-values
+    pval0 = np.sort(pval0, axis=1)
+
     B, p = learned_templates.shape
     low, high = 0, B - 1
+
+    if estimate_jer(learned_templates[high], pval0, k_max) <= alpha:
+        # check if all learned templates control the JER
+        warnings.warn("All templates control the JER:\
+                       choice may be conservative")
+        return learned_templates[high][:k_max]
+
+    if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
+        warnings.warn("No suitable template found; Simes is used instead")
+        # check if any learned templates controls the JER
+        # if not, return calibrated Simes
+        piv_stat = get_pivotal_stats(pval0, K=k_max)
+        lambda_quant = np.quantile(piv_stat, alpha)
+        simes_thr = linear_template(lambda_quant, k_max, p)
+        return simes_thr
+
     while high - low > min_dist:
         mid = int((high + low) / 2)
         lw = estimate_jer(learned_templates[low], pval0, k_max) - alpha
         md = estimate_jer(learned_templates[mid], pval0, k_max) - alpha
         if md == 0:
-            return mid
+            return learned_templates[mid][:k_max]
         if lw * md < 0:
             high = mid
         else:
             low = mid
-    return low
+    return learned_templates[low][:k_max]
