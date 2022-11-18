@@ -9,7 +9,8 @@ on:
     paths-ignore:
       - 'setup.py'
   pull_request:
-    branches: [ * ]
+    branches:
+      - '*'
     paths-ignore:
       - 'setup.py'
 
