@@ -39,31 +39,12 @@ def max_fp(p_values, thresholds):
         Annals of Statistics, 48(3), 1281-1303.
     """
 
-    # make sure that thresholds is sorted
-    if np.linalg.norm(thresholds - np.sort(thresholds)) \
-       > 0.0001:
-        thresholds = np.sort(thresholds)
-        print("The input 'thresholds' was not sorted -> this is done now")
-
-    # do the job
-    subset_size = p_values.shape[0]
-    template_size = thresholds.shape[0]
-    size = np.min([subset_size, template_size])
-
-    if size < 1:
+    s = len(p_values)
+    if s == 0:
         return 0
 
-    seq_k = np.arange(size)
-
-    # k-FWER control for k>subset_size is useless
-    # (will yield bound > subset_size)
-    thresholds = thresholds[seq_k]
-
-    card = np.zeros(thresholds.shape[0])
-    for i in range(thresholds.shape[0]):
-        card[i] = np.sum(p_values >= thresholds[i])
-
-    return np.min([subset_size, (card + seq_k).min()])
+    all_max_fp = curve_max_fp(p_values, thresholds)
+    return all_max_fp[s - 1]
 
 
 def min_tp(p_values, thresholds):
@@ -157,14 +138,8 @@ def curve_max_fp(p_values, thresholds):
     """
 
     #  make sure that p_values and thresholds are sorted
-    if np.linalg.norm(p_values - p_values[np.argsort(p_values)]) > 0.0001:
-        p_values = p_values[np.argsort(p_values)]
-        print("The input p-values were not sorted -> this is done now")
-
-    if np.linalg.norm(thresholds - thresholds[np.argsort(thresholds)]) \
-       > 0.0001:
-        thresholds = thresholds[np.argsort(thresholds)]
-        print("The input 'thresholds' were not sorted -> this is done now")
+    p_values = np.sort(p_values)
+    thresholds = np.sort(thresholds)
 
     # do the job
     p = p_values.shape[0]
