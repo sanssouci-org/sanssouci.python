@@ -172,7 +172,7 @@ def curve_max_fp(p_values, thresholds):
     indices = np.where(K > 0)[0]
     A = Z - np.arange(0, k_max)
 
-    K_ww = K[K > 0].astype(np.int)
+    K_ww = K[K > 0].astype(int)
     cummax_A = A.copy()
     for i in range(1, cummax_A.shape[0]):
         cummax_A[i] = np.max([cummax_A[i - 1], cummax_A[i]])
