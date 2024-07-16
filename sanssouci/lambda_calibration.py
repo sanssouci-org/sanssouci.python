@@ -184,7 +184,7 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-1):
+def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-1, k_min=0):
     """Get pivotal statistic
 
     Parameters
@@ -227,7 +227,7 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-
         K = tk_inv_all.shape[1]  # tkInv_all.shape[1] is equal to p
 
     # Step 4: report min for each row
-    pivotal_stats = np.min(tk_inv_all[:, :K], axis=1)
+    pivotal_stats = np.min(tk_inv_all[:, k_min: K], axis=1)
 
     return pivotal_stats
 
