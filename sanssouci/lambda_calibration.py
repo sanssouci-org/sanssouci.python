@@ -232,7 +232,7 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-
     return pivotal_stats
 
 
-def estimate_jer(template, pval0, k_max):
+def estimate_jer(template, pval0, k_max, k_min=0):
 
     """
     Compute empirical JER for a given template and permuted p-values
@@ -244,13 +244,13 @@ def estimate_jer(template, pval0, k_max):
     cutoffs = np.searchsorted(template, pval0, side='right')
 
     signs = np.sign(id_ranks - cutoffs)
-    sgn_trunc = signs[:, :k_max]
+    sgn_trunc = signs[:, k_min: k_max]
     JER = np.sum([np.any(sgn_trunc[perm] >= 0) for perm in range(B)]) / B
 
     return JER
 
 
-def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
+def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
 
     """
     For a given risk level, calibrate the method on learned templates by
@@ -285,13 +285,13 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     B, p = learned_templates.shape
     low, high = 0, B - 1
 
-    if estimate_jer(learned_templates[high], pval0, k_max) <= alpha:
+    if estimate_jer(learned_templates[high], pval0, k_max, k_min=k_min) <= alpha:
         # check if all learned templates control the JER
         warnings.warn("All templates control the JER:\
                        choice may be conservative")
         return learned_templates[high][:k_max]
 
-    if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
+    if estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) >= alpha:
         warnings.warn("No suitable template found; Simes is used instead")
         # check if any learned templates controls the JER
         # if not, return calibrated Simes
@@ -302,8 +302,8 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
 
     while high - low > min_dist:
         mid = int((high + low) / 2)
-        lw = estimate_jer(learned_templates[low], pval0, k_max) - alpha
-        md = estimate_jer(learned_templates[mid], pval0, k_max) - alpha
+        lw = estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) - alpha
+        md = estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min) - alpha
         if md == 0:
             return learned_templates[mid][:k_max]
         if lw * md < 0:
