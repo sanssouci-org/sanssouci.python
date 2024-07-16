@@ -110,7 +110,7 @@ def inverse_shifted_template(y, k, m):
     estimated_template : array of same shape as y
     """
     k_min = 27
-    if k - k_min > 0:
+    if k - k_min <= 0:
         return np.array([np.inf] * y.shape[0])
     else:
         return y*(m - k_min)/(k - k_min)
