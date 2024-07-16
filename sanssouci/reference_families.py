@@ -76,3 +76,41 @@ def inverse_beta_template(y, k, m):
     estimated_template : array of same shape as y
     """
     return beta.cdf(y, k, m + 1 - k)
+
+
+def shifted_template(k, m, k_min):
+    """
+    Parameters
+    ----------
+    alpha : float
+        confidence level in [0, 1]
+    k : int
+        number of rejection sets in Beta template
+    m : int
+        number of hypotheses
+    Returns
+    -------
+    template : array of shape (k,)
+    """
+    return np.array([max(0, (j - k_min)/(m - k_min)) for j in range(k)])
+
+
+def inverse_shifted_template(y, k, m):
+    """
+    Parameters
+    ----------
+    y : array of floats of shape (B, )
+        values to apply template to
+    k : int
+        index of rejection set in beta template
+    m : int
+        number of hypotheses
+    Returns
+    -------
+    estimated_template : array of same shape as y
+    """
+    k_min = 27
+    if k - k_min > 0:
+        return np.array([np.inf] * y.shape[0])
+    else:
+        return y*(m - k_min)/(k - k_min)
