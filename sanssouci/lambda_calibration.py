@@ -156,7 +156,7 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
 
     array-like of shape (B,)
         A numpy array of of size [B]  containing the pivotal statitics, whose
-        j-th entry corresponds to \psi(g_j.X) with notation of the AoS 2020
+        j-th entry corresponds to psi(g_j.X) with notation of the AoS 2020
         paper cited below (section 4.5) [1]_
 
     References
@@ -204,7 +204,7 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-
 
     array-like of shape (B,)
         A numpy array of of size [B]  containing the pivotal statitics, whose
-        j-th entry corresponds to \psi(g_j.X) with notation of the AoS 2020
+        j-th entry corresponds to psi(g_j.X) with notation of the AoS 2020
         paper cited below (section 4.5) [1]_
 
     References
