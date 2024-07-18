@@ -220,7 +220,7 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-
     # Step 3: apply template function
     # For each feature p, compare sorted permuted p-values to template
     B, p = p0.shape
-    tk_inv_all = np.array([inverse_template(p0[:, i], i + 1, p)
+    tk_inv_all = np.array([inverse_template(p0[:, i], i + 1, p, k_min=k_min)
                            for i in range(p)]).T
 
     if K < 0:

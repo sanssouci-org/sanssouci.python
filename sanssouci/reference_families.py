@@ -92,10 +92,10 @@ def shifted_template(k, m, k_min):
     -------
     template : array of shape (k,)
     """
-    return np.array([max(0, (j - k_min)/(m - k_min)) for j in range(k)])
+    return np.array([max(0, (j - k_min)/(m - k_min)) for j in range(1, k + 1)])
 
 
-def inverse_shifted_template(y, k, m):
+def inverse_shifted_template(y, k, m, k_min):
     """
     Parameters
     ----------
@@ -109,8 +109,7 @@ def inverse_shifted_template(y, k, m):
     -------
     estimated_template : array of same shape as y
     """
-    k_min = 27
     if k - k_min <= 0:
         return np.array([np.inf] * y.shape[0])
     else:
-        return y*(m - k_min)/(k - k_min)
+        return y * (m - k_min)/(k - k_min)
