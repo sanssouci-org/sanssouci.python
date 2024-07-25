@@ -2,9 +2,9 @@ import numpy as np
 from scipy import stats
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
-from .row_welch import row_welch_tests
-from .reference_families import inverse_linear_template, inverse_shifted_template
-from .reference_families import linear_template
+from sanssouci.row_welch import row_welch_tests
+from sanssouci.reference_families import inverse_linear_template, inverse_shifted_template
+from sanssouci.reference_families import linear_template, shifted_template_lambda
 import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -311,3 +311,64 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
         else:
             low = mid
     return learned_templates[low][:k_max]
+
+
+def calibrate_jer_lambda(alpha, generate_template, pval0, k_max, m, min_dist=1, k_min=0, epsilon=0.01):
+
+    """
+    For a given risk level, calibrate the method on learned templates by
+    dichotomy. This is equivalent to calibrating using pivotal stats but does
+    not require the availability of a closed form inverse template.
+
+    Parameters
+    ----------
+
+    alpha : float
+        confidence level in [0, 1]
+    generate_template : function that generates templates
+    pval0 :  array of shape (B, p)
+        permuted p-values
+    k_max : int
+        template size
+    min_dist : int
+        minimum distance to stop iterating dichotomy. Default = 1.
+
+    Returns
+    -------
+
+    thr : list of length k_max
+        Threshold family chosen by calibration
+
+    """
+
+    # Sort permuted p-values
+    pval0 = np.sort(pval0, axis=1)
+
+    lambda_low, lambda_high = 0, 1
+
+    if estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) <= alpha:
+        # check if all learned templates control the JER
+        warnings.warn("All templates control the JER:\
+                       choice may be conservative")
+        return generate_template(k_max, m, k_min, lambda_high)
+
+    if estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) >= alpha:
+        warnings.warn("No suitable template found; Simes is used instead")
+        # check if any learned templates controls the JER
+        # if not, return calibrated Simes
+        piv_stat = get_pivotal_stats(pval0, K=k_max)
+        lambda_quant = np.quantile(piv_stat, alpha)
+        simes_thr = linear_template(lambda_quant, k_max, p)
+        return simes_thr
+
+    while abs(estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) / alpha) > epsilon:
+        lambda_mid = int((lambda_high + lambda_low) / 2)
+        lw = estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
+        md = estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha
+        if md == 0:
+            return generate_template(k_max, m, k_min, lambda_mid)[:k_max]
+        if lw * md < 0:
+            lambda_high = lambda_mid
+        else:
+            lambda_low = lambda_mid
+    return generate_template(k_max, m, k_min, lambda_low)[:k_max]

@@ -113,3 +113,20 @@ def inverse_shifted_template(y, k, m, k_min):
         return np.array([np.inf] * y.shape[0])
     else:
         return y * (m - k_min)/(k - k_min)
+
+
+def shifted_template_lambda(k, m, k_min, lbd):
+    """
+    Parameters
+    ----------
+    alpha : float
+        confidence level in [0, 1]
+    k : int
+        number of rejection sets in Beta template
+    m : int
+        number of hypotheses
+    Returns
+    -------
+    template : array of shape (k,)
+    """
+    return lbd * np.array([max(0, (j - k_min)/(m - k_min)) for j in range(1, k + 1)])
