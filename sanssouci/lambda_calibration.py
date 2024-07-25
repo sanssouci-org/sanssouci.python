@@ -313,7 +313,7 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
     return learned_templates[low][:k_max]
 
 
-def calibrate_jer_lambda(alpha, generate_template, pval0, k_max, m, min_dist=1, k_min=0, epsilon=0.01):
+def calibrate_jer_param(alpha, generate_template, pval0, k_max, m, k_min=0, epsilon=0.01):
 
     """
     For a given risk level, calibrate the method on learned templates by
@@ -330,8 +330,8 @@ def calibrate_jer_lambda(alpha, generate_template, pval0, k_max, m, min_dist=1, 
         permuted p-values
     k_max : int
         template size
-    min_dist : int
-        minimum distance to stop iterating dichotomy. Default = 1.
+    epsilon : float
+        confidence level of the JER control
 
     Returns
     -------
@@ -340,7 +340,7 @@ def calibrate_jer_lambda(alpha, generate_template, pval0, k_max, m, min_dist=1, 
         Threshold family chosen by calibration
 
     """
-
+    p = m
     # Sort permuted p-values
     pval0 = np.sort(pval0, axis=1)
 
@@ -361,14 +361,15 @@ def calibrate_jer_lambda(alpha, generate_template, pval0, k_max, m, min_dist=1, 
         simes_thr = linear_template(lambda_quant, k_max, p)
         return simes_thr
 
-    while abs(estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) / alpha) > epsilon:
-        lambda_mid = int((lambda_high + lambda_low) / 2)
+    while abs((estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha) / alpha) > epsilon:
+        lambda_mid = (lambda_high + lambda_low) / 2
         lw = estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
-        md = estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha
+        md = estimate_jer(generate_template(k_max, m, k_min, lambda_mid), pval0, k_max, k_min=k_min) - alpha
         if md == 0:
             return generate_template(k_max, m, k_min, lambda_mid)[:k_max]
         if lw * md < 0:
             lambda_high = lambda_mid
         else:
             lambda_low = lambda_mid
+        compteur += 1
     return generate_template(k_max, m, k_min, lambda_low)[:k_max]
