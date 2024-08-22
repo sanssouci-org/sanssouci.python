@@ -43,6 +43,46 @@ def inverse_linear_template(y, k, m):
     return y * m / k
 
 
+def linear_template_kmin(k, m, k_min, alpha):
+    """
+    Parameters
+    ----------
+    alpha : float
+        confidence level in [0, 1]
+    k : int
+        number of rejection sets in linear template
+    m : int
+        number of hypotheses
+    Returns
+    -------
+    template : array of shape (k,)
+    """
+    template = alpha * np.arange(1, k + 1) / m
+    template[: k_min] = np.zeros(k_min)
+
+    return template
+
+
+def inverse_linear_template_kmin(y, k, m, k_min=0):
+    """
+    Parameters
+    ----------
+    y : array of floats of shape (B, )
+        values to apply template to
+    k : int
+        index of rejection set in linear template
+    m : int
+        number of hypotheses
+    Returns
+    -------
+    estimated_template : array of same shape as y
+    """
+    if k <= k_min:
+        return np.array([np.inf] * y.shape[0])
+    else:
+        return inverse_linear_template(y, k, m)
+
+
 def beta_template(alpha, k, m):
     """
     Parameters
