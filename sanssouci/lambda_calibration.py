@@ -362,16 +362,16 @@ def calibrate_jer_param(alpha, generate_template, pval0, k_max, m, k_min=0, epsi
         return simes_thr
 
     compteur = 0
-    while abs((estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha) / alpha) > epsilon:
+    while abs((estimate_jer(generate_template(m, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha) / alpha) > epsilon:
         compteur += 1
         print(compteur)
         lambda_mid = (lambda_high + lambda_low) / 2
-        lw = estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
-        md = estimate_jer(generate_template(k_max, m, k_min, lambda_mid), pval0, k_max, k_min=k_min) - alpha
+        lw = estimate_jer(generate_template(m, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
+        md = estimate_jer(generate_template(m, m, k_min, lambda_mid), pval0, k_max, k_min=k_min) - alpha
         if md == 0:
-            return generate_template(k_max, m, k_min, lambda_mid)[:k_max]
+            return generate_template(m, m, k_min, lambda_mid)[:k_max]
         if lw * md < 0:
             lambda_high = lambda_mid
         else:
             lambda_low = lambda_mid
-    return generate_template(k_max, m, k_min, lambda_high)[:k_max]
+    return generate_template(m, m, k_min, lambda_high)[:k_max]
