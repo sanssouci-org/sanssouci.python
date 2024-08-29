@@ -361,7 +361,10 @@ def calibrate_jer_param(alpha, generate_template, pval0, k_max, m, k_min=0, epsi
         simes_thr = linear_template(lambda_quant, k_max, p)
         return simes_thr
 
+    compteur = 0
     while abs((estimate_jer(generate_template(k_max, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha) / alpha) > epsilon:
+        compteur += 1
+        print(compteur)
         lambda_mid = (lambda_high + lambda_low) / 2
         lw = estimate_jer(generate_template(k_max, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
         md = estimate_jer(generate_template(k_max, m, k_min, lambda_mid), pval0, k_max, k_min=k_min) - alpha
