@@ -365,9 +365,9 @@ def calibrate_jer_param(alpha, generate_template, pval0, k_max, m, k_min=0, epsi
     while abs((estimate_jer(generate_template(m, m, k_min, lambda_high), pval0, k_max, k_min=k_min) - alpha) / alpha) > epsilon:
         compteur += 1
         lambda_mid = (lambda_high + lambda_low) / 2
-        print(compteur, lw + alpha, md + alpha)
         lw = estimate_jer(generate_template(m, m, k_min, lambda_low), pval0, k_max, k_min=k_min) - alpha
         md = estimate_jer(generate_template(m, m, k_min, lambda_mid), pval0, k_max, k_min=k_min) - alpha
+        print(compteur, lw + alpha, md + alpha)
         if md == 0:
             return generate_template(m, m, k_min, lambda_mid)[:k_max]
         if lw * md < 0:
