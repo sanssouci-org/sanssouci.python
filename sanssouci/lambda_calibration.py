@@ -374,4 +374,5 @@ def calibrate_jer_param(alpha, generate_template, pval0, k_max, m, k_min=0, epsi
             lambda_high = lambda_mid
         else:
             lambda_low = lambda_mid
+        print('high', lambda_high, 'low', lambda_low, 'mid', lambda_mid)
     return generate_template(m, m, k_min, lambda_high)[:k_max]
