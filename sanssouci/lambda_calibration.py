@@ -3,8 +3,8 @@ from scipy import stats
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
 from sanssouci.row_welch import row_welch_tests
-from sanssouci.reference_families import inverse_linear_template, inverse_shifted_template
-from sanssouci.reference_families import linear_template, shifted_template_lambda
+from sanssouci.reference_families import inverse_linear_template, inverse_shifted_linear_template
+from sanssouci.reference_families import linear_template, shifted_linear_template
 import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -184,7 +184,7 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-1, k_min=0):
+def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_template, K=-1, k_min=0):
     """Get pivotal statistic
 
     Parameters
@@ -198,6 +198,8 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_template, K=-
     K :  int
         For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
         Automatically set to p if its input value is < 0.
+    k_min : int 
+        Parameter that defines the shift of the template. The template is zero for k ≤ k_min.
 
     Returns
     -------
@@ -270,6 +272,8 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
         template size
     min_dist : int
         minimum distance to stop iterating dichotomy. Default = 1.
+    k_min : int
+        Parameter that defines the shift of the template. The template is zero for k ≤ k_min.
 
     Returns
     -------

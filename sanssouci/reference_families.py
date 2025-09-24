@@ -118,24 +118,8 @@ def inverse_beta_template(y, k, m):
     return beta.cdf(y, k, m + 1 - k)
 
 
-def shifted_template(k, m, k_min):
-    """
-    Parameters
-    ----------
-    alpha : float
-        confidence level in [0, 1]
-    k : int
-        number of rejection sets in Beta template
-    m : int
-        number of hypotheses
-    Returns
-    -------
-    template : array of shape (k,)
-    """
-    return np.array([max(0, (j - k_min)/(m - k_min)) for j in range(1, k + 1)])
 
-
-def inverse_shifted_template(y, k, m, k_min):
+def inverse_shifted_linear_template(y, k, m, k_min):
     """
     Parameters
     ----------
@@ -145,6 +129,9 @@ def inverse_shifted_template(y, k, m, k_min):
         index of rejection set in beta template
     m : int
         number of hypotheses
+    k_min : 
+        parameter that defines the shift of the template. The template is zero for k <= k_min.
+
     Returns
     -------
     estimated_template : array of same shape as y
@@ -155,16 +142,18 @@ def inverse_shifted_template(y, k, m, k_min):
         return y * (m - k_min)/(k - k_min)
 
 
-def shifted_template_lambda(k, m, k_min, lbd):
+def shifted_linear_template(k, m, k_min, lbd):
     """
     Parameters
     ----------
-    alpha : float
-        confidence level in [0, 1]
     k : int
         number of rejection sets in Beta template
     m : int
         number of hypotheses
+    k_min : int
+        parameter that defines the shift of the template. The template is zero for k <= k_min.
+    lbd : float
+        parameter in [0, 1], selected to satisfy statistical properties.
     Returns
     -------
     template : array of shape (k,)
