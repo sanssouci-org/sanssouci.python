@@ -31,6 +31,11 @@ def test_max_fp():
     thresholds = np.array([1.e-4])
     assert max_fp(p_values, thresholds) == 100
 
+    # corner case: empty vector
+    p_values = ()
+    thresholds = np.array([1.e-4])
+    assert max_fp(p_values, thresholds) == 0
+    
 
 def test_min_tp():
     p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
