@@ -117,4 +117,4 @@ def inverse_shifted_linear_template(y, k, m, k_min):
     if k - k_min <= 0:
         return np.array([np.inf] * y.shape[0])
     else:
-        return y * (m - k_min)/(k - k_min)
+        return y * (m - k_min) / (k - k_min)
