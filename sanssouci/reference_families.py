@@ -84,7 +84,7 @@ def shifted_linear_template(alpha, k, m, k_min):
     Parameters
     ----------
     alpha : float
-        parameter in [0, 1], selected to satisfy statistical properties.
+        hyperparameter in [0, 1], to be chosen to satisfy Joint Error Rate Control.
     k : int
         number of rejection sets in linear template
     m : int
