@@ -94,7 +94,7 @@ def shifted_linear_template(alpha, k, m, k_min):
     -------
     template : array of shape (k,)
     """
-    return alpha * np.array([max(0, (j - k_min)/(m - k_min)) for j in range(1, k + 1)])
+    return alpha * np.array([max(0, (j - k_min) / (m - k_min)) for j in range(1, k + 1)])
 
 
 def inverse_shifted_linear_template(y, k, m, k_min):
