@@ -80,6 +80,7 @@ def inverse_beta_template(y, k, m):
 
 def shifted_linear_template(alpha, k, m, k_min):
     """
+    Computes the shifted linear template (pARI template)
     Parameters
     ----------
     alpha : float
@@ -99,6 +100,7 @@ def shifted_linear_template(alpha, k, m, k_min):
 
 def inverse_shifted_linear_template(y, k, m, k_min):
     """
+    Function to inverse the shifted template (pARI template)
     Parameters
     ----------
     y : array of floats of shape (B, )
