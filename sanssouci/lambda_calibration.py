@@ -3,8 +3,10 @@ from scipy import stats
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
 from sanssouci.row_welch import row_welch_tests
-from sanssouci.reference_families import inverse_linear_template, inverse_shifted_linear_template
-from sanssouci.reference_families import linear_template, shifted_linear_template
+from sanssouci.reference_families import inverse_linear_template
+from sanssouci.reference_families import inverse_shifted_linear_template
+from sanssouci.reference_families import linear_template
+from sanssouci.reference_families import shifted_linear_template
 import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -184,7 +186,8 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_template, K=-1, k_min=0):
+def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_template, 
+                              K=-1, k_min=0):
     """Get pivotal statistic
 
     Parameters
@@ -306,8 +309,10 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
 
     while high - low > min_dist:
         mid = int((high + low) / 2)
-        lw = estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) - alpha
-        md = estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min) - alpha
+        lw = estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) - \
+             alpha
+        md = estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min) - \
+             alpha
         if md == 0:
             return learned_templates[mid][:k_max]
         if lw * md < 0:
