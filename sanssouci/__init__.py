@@ -25,4 +25,7 @@ __all__ = [
     'max_fp',
     'min_tp',
     'curve_max_fp',
+    'get_pivotal_stats_shifted',
+    'inverse_shifted_linear_template',
+    'shifted_linear_template'
 ]

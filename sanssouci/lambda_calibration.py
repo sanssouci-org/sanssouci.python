@@ -2,9 +2,10 @@ import numpy as np
 from scipy import stats
 from joblib import Parallel, delayed
 from sklearn.utils import check_random_state
-from .row_welch import row_welch_tests
-from .reference_families import inverse_linear_template
-from .reference_families import linear_template
+from sanssouci.row_welch import row_welch_tests
+from sanssouci.reference_families import inverse_linear_template
+from sanssouci.reference_families import inverse_shifted_linear_template
+from sanssouci.reference_families import linear_template
 import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -156,7 +157,7 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
 
     array-like of shape (B,)
         A numpy array of of size [B]  containing the pivotal statitics, whose
-        j-th entry corresponds to \psi(g_j.X) with notation of the AoS 2020
+        j-th entry corresponds to psi(g_j.X) with notation of the AoS 2020
         paper cited below (section 4.5) [1]_
 
     References
@@ -184,8 +185,61 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def estimate_jer(template, pval0, k_max):
+def get_pivotal_stats_shifted(p0,
+                              inverse_template=inverse_shifted_linear_template,
+                              K=-1,
+                              k_min=0):
+    """Get pivotal statistic
 
+    Parameters
+    ----------
+
+    p0 :  array-like of shape (B, p)
+        A numpy array of size [B,p] of null p-values obtained from
+        B permutations for p hypotheses.
+    inverse_template : function
+        A function with the same I/O as inverse_template_linear
+    K :  int
+        For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
+        Automatically set to p if its input value is < 0.
+    k_min : int
+        parameter that defines the shift of the template.
+        The template is zero for k <= k_min.
+
+    Returns
+    -------
+
+    array-like of shape (B,)
+        A numpy array of of size [B]  containing the pivotal statitics, whose
+        j-th entry corresponds to psi(g_j.X) with notation of the AoS 2020
+        paper cited below (section 4.5) [1]_
+
+    References
+    ----------
+
+    .. [1] Blanchard, G., Neuvial, P., & Roquain, E. (2020). Post hoc
+        confidence bounds on false positives using reference families.
+        Annals of Statistics, 48(3), 1281-1303.
+    """
+    # Sort permuted p-values
+    p0 = np.sort(p0, axis=1)
+
+    # Step 3: apply template function
+    # For each feature p, compare sorted permuted p-values to template
+    B, p = p0.shape
+    tk_inv_all = np.array([inverse_template(p0[:, i], i + 1, p, k_min=k_min)
+                           for i in range(p)]).T
+
+    if K < 0:
+        K = tk_inv_all.shape[1]  # tkInv_all.shape[1] is equal to p
+
+    # Step 4: report min for each row
+    pivotal_stats = np.min(tk_inv_all[:, k_min: K], axis=1)
+
+    return pivotal_stats
+
+
+def estimate_jer(template, pval0, k_max, k_min=0):
     """
     Compute empirical JER for a given template and permuted p-values
     """
@@ -196,14 +250,13 @@ def estimate_jer(template, pval0, k_max):
     cutoffs = np.searchsorted(template, pval0, side='right')
 
     signs = np.sign(id_ranks - cutoffs)
-    sgn_trunc = signs[:, :k_max]
+    sgn_trunc = signs[:, k_min: k_max]
     JER = np.sum([np.any(sgn_trunc[perm] >= 0) for perm in range(B)]) / B
 
     return JER
 
 
-def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
-
+def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
     """
     For a given risk level, calibrate the method on learned templates by
     dichotomy. This is equivalent to calibrating using pivotal stats but does
@@ -222,6 +275,9 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
         template size
     min_dist : int
         minimum distance to stop iterating dichotomy. Default = 1.
+    k_min : int
+        parameter that defines the shift of the template.
+        The template is zero for k <= k_min.
 
     Returns
     -------
@@ -237,13 +293,15 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
     B, p = learned_templates.shape
     low, high = 0, B - 1
 
-    if estimate_jer(learned_templates[high], pval0, k_max) <= alpha:
+    if estimate_jer(learned_templates[high],
+                    pval0, k_max, k_min=k_min) <= alpha:
         # check if all learned templates control the JER
         warnings.warn("All templates control the JER:\
                        choice may be conservative")
         return learned_templates[high][:k_max]
 
-    if estimate_jer(learned_templates[low], pval0, k_max) >= alpha:
+    if estimate_jer(learned_templates[low],
+                    pval0, k_max, k_min=k_min) >= alpha:
         warnings.warn("No suitable template found; Simes is used instead")
         # check if any learned templates controls the JER
         # if not, return calibrated Simes
@@ -254,8 +312,15 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1):
 
     while high - low > min_dist:
         mid = int((high + low) / 2)
-        lw = estimate_jer(learned_templates[low], pval0, k_max) - alpha
-        md = estimate_jer(learned_templates[mid], pval0, k_max) - alpha
+        lw = (
+            estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min)
+            - alpha
+        )
+        md = (
+            estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min)
+            - alpha
+        )
+
         if md == 0:
             return learned_templates[mid][:k_max]
         if lw * md < 0:
