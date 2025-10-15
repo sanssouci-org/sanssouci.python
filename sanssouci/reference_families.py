@@ -14,7 +14,8 @@ def linear_template(alpha, k, m):
     Parameters
     ----------
     alpha : float
-        hyperparameter in [0, 1], to be chosen to satisfy Joint Error Rate Control
+        hyperparameter in [0, 1],
+        to be chosen to satisfy Joint Error Rate Control.
     k : int
         number of rejection sets in linear template
     m : int
@@ -51,7 +52,8 @@ def beta_template(alpha, k, m):
     Parameters
     ----------
     alpha : float
-        hyperparameter in [0, 1], to be chosen to satisfy Joint Error Rate Control.
+        hyperparameter in [0, 1],
+        to be chosen to satisfy Joint Error Rate Control.
     k : int
         number of rejection sets in Beta template
     m : int
@@ -88,7 +90,8 @@ def shifted_linear_template(alpha, k, m, k_min):
     Parameters
     ----------
     alpha : float
-        hyperparameter in [0, 1], to be chosen to satisfy Joint Error Rate Control
+        hyperparameter in [0, 1],
+        to be chosen to satisfy Joint Error Rate Control.
     k : int
         number of rejection sets in linear template
     m : int
@@ -101,9 +104,10 @@ def shifted_linear_template(alpha, k, m, k_min):
     template : array of shape (k,)
     """
     return alpha * np.array([
-            max(0, (j - k_min) / (m - k_min))
-            for j in range(1, k + 1)
-        ])
+        max(0, (j - k_min) / (m - k_min))
+        for j in range(1, k + 1)
+    ])
+
 
 def inverse_shifted_linear_template(y, k, m, k_min):
     """
@@ -116,7 +120,7 @@ def inverse_shifted_linear_template(y, k, m, k_min):
         index of rejection set in linear template
     m : int
         number of hypotheses
-    k_min : 
+    k_min :
         parameter that defines the shift of the template.
         The template is zero for k <= k_min.
 

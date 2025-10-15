@@ -6,7 +6,6 @@ from sanssouci.row_welch import row_welch_tests
 from sanssouci.reference_families import inverse_linear_template
 from sanssouci.reference_families import inverse_shifted_linear_template
 from sanssouci.reference_families import linear_template
-from sanssouci.reference_families import shifted_linear_template
 import warnings
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -186,8 +185,10 @@ def get_pivotal_stats(p0, inverse_template=inverse_linear_template, K=-1):
     return pivotal_stats
 
 
-def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_template, 
-                              K=-1, k_min=0):
+def get_pivotal_stats_shifted(p0,
+                              inverse_template=inverse_shifted_linear_template,
+                              K=-1,
+                              k_min=0):
     """Get pivotal statistic
 
     Parameters
@@ -201,7 +202,7 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_templa
     K :  int
         For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
         Automatically set to p if its input value is < 0.
-    k_min : int 
+    k_min : int
         parameter that defines the shift of the template.
         The template is zero for k <= k_min.
 
@@ -239,7 +240,6 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_templa
 
 
 def estimate_jer(template, pval0, k_max, k_min=0):
-
     """
     Compute empirical JER for a given template and permuted p-values
     """
@@ -257,7 +257,6 @@ def estimate_jer(template, pval0, k_max, k_min=0):
 
 
 def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
-
     """
     For a given risk level, calibrate the method on learned templates by
     dichotomy. This is equivalent to calibrating using pivotal stats but does
@@ -294,13 +293,15 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
     B, p = learned_templates.shape
     low, high = 0, B - 1
 
-    if estimate_jer(learned_templates[high], pval0, k_max, k_min=k_min) <= alpha:
+    if estimate_jer(learned_templates[high],
+                    pval0, k_max, k_min=k_min) <= alpha:
         # check if all learned templates control the JER
         warnings.warn("All templates control the JER:\
                        choice may be conservative")
         return learned_templates[high][:k_max]
 
-    if estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) >= alpha:
+    if estimate_jer(learned_templates[low],
+                    pval0, k_max, k_min=k_min) >= alpha:
         warnings.warn("No suitable template found; Simes is used instead")
         # check if any learned templates controls the JER
         # if not, return calibrated Simes
@@ -311,10 +312,15 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
 
     while high - low > min_dist:
         mid = int((high + low) / 2)
-        lw = estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min) - \
-             alpha
-        md = estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min) - \
-             alpha
+        lw = (
+            estimate_jer(learned_templates[low], pval0, k_max, k_min=k_min)
+            - alpha
+        )
+        md = (
+            estimate_jer(learned_templates[mid], pval0, k_max, k_min=k_min)
+            - alpha
+        )
+
         if md == 0:
             return learned_templates[mid][:k_max]
         if lw * md < 0:
