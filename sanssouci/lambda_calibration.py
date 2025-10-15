@@ -202,7 +202,8 @@ def get_pivotal_stats_shifted(p0, inverse_template=inverse_shifted_linear_templa
         For JER control over 1:K, i.e. joint control of all k-FWER, k<= K.
         Automatically set to p if its input value is < 0.
     k_min : int 
-        Parameter that defines the shift of the template. The template is zero for k ≤ k_min.
+        parameter that defines the shift of the template.
+        The template is zero for k <= k_min.
 
     Returns
     -------
@@ -276,7 +277,8 @@ def calibrate_jer(alpha, learned_templates, pval0, k_max, min_dist=1, k_min=0):
     min_dist : int
         minimum distance to stop iterating dichotomy. Default = 1.
     k_min : int
-        Parameter that defines the shift of the template. The template is zero for k ≤ k_min.
+        parameter that defines the shift of the template.
+        The template is zero for k <= k_min.
 
     Returns
     -------
