@@ -2,13 +2,17 @@ from .row_welch import (
     get_summary_stats, suff_welch_test, row_welch_tests)
 from .reference_families import (
     beta_template, inverse_beta_template,
-    linear_template, inverse_linear_template)
+    linear_template, inverse_linear_template,
+    shifted_linear_template, inverse_shifted_linear_template)
 from .post_hoc_bounds import (
     max_fp, min_tp, curve_max_fp)
 from .lambda_calibration import (
+    calibrate_jer,
     get_permuted_p_values,
     get_permuted_p_values_one_sample,
-    get_pivotal_stats)
+    get_pivotal_stats,
+    get_pivotal_stats_shifted
+)
 
 
 __all__ = [
@@ -19,13 +23,14 @@ __all__ = [
     'inverse_beta_template',
     'linear_template',
     'beta_template',
+    'calibrate_jer',
     'get_permuted_p_values',
     'get_permuted_p_values_one_sample',
     'get_pivotal_stats',
-    'max_fp',
-    'min_tp',
-    'curve_max_fp',
     'get_pivotal_stats_shifted',
     'inverse_shifted_linear_template',
     'shifted_linear_template'
+    'max_fp',
+    'min_tp',
+    'curve_max_fp',
 ]
