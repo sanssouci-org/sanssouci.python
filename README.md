@@ -37,10 +37,9 @@ categ=np.random.binomial(1, 0.4, size=n)
 
 #2) test the algorithm
 B = 100
-pval0=sa.get_perm_p(X, categ, B=B , row_test_fun=sa.row_welch_tests)
+pval0=sa.get_permuted_p_values(X, categ, B=B , row_test_fun=sa.row_welch_tests)
 
-K=p
-piv_stat=sa.get_pivotal_stats(pval0, K=K)
+piv_stat=sa.get_pivotal_stats(pval0)
 
 
 #3) Compute Bounds
@@ -48,7 +47,7 @@ piv_stat=sa.get_pivotal_stats(pval0, K=K)
 alpha=0.1
 
 lambda_quant=np.quantile(piv_stat, alpha)
-thr=sa.t_linear(lambda_quant, np.arange(1,p+1), p)
+thr=sa.linear_template(lambda_quant, p, p)
 swt=sa.row_welch_tests(X, categ)
 p_values=swt['p_value'][:]
 pvals=p_values[:10]
