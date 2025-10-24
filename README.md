@@ -4,9 +4,7 @@
 
 Post hoc inference via multiple testing
 
-The goal of this projet is to port the [R package sansSouci](https://pneuvial.github.io/sanssouci/) to python.
-
-Authors: [Laurent Risser](http://laurent.risser.free.fr/) and [Pierre Neuvial](https://www.math.univ-toulouse.fr/~pneuvial/).
+This projet implements post hoc inference-based methods based for neuroimaging and genomics. See also the [R package sanssouci](https://sanssouci-org.github.io/sanssouci/) for an implementation in R.
 
 ### Permutation-based confidence envelopes
 
