@@ -108,7 +108,7 @@ def test_get_pivotal_stat():
 
 def test_coherence_calibration():
     """
-    Testing whether calibration via dichotomy and pivotal 
+    Testing whether calibration via dichotomy and pivotal
     stats are equivalent.
     """
     alpha = 0.05
