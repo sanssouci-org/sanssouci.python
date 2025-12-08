@@ -1,7 +1,9 @@
 import numpy as np
-from sanssouci.reference_families import linear_template, inverse_linear_template
+from sanssouci.reference_families import linear_template
+from sanssouci.reference_families import inverse_linear_template
 from sanssouci.reference_families import beta_template, inverse_beta_template
-from sanssouci.reference_families import shifted_linear_template, inverse_shifted_linear_template
+from sanssouci.reference_families import shifted_linear_template
+from sanssouci.reference_families import inverse_shifted_linear_template
 from scipy.stats import beta
 
 from numpy.testing import assert_array_almost_equal
@@ -97,5 +99,3 @@ def test_inverse_shifted_linear_template():
     q1 = inverse_shifted_linear_template(p0, 10, p, 1)
     q2 = inverse_shifted_linear_template(p0, 10, p, 2)
     assert_array_less(q1, q2)
-
-
