@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
-from scipy.stats import norm
 from sanssouci.post_hoc_bounds import max_fp, min_tp, curve_max_fp, min_tdp
 from sanssouci.post_hoc_bounds import curve_min_tdp, find_largest_region
 from sanssouci.post_hoc_bounds import _compute_hommel_value
@@ -202,22 +201,17 @@ def test_compute_hommel_value():
     with pytest.raises(ValueError, match="alpha should be between 0 and 1"):
         _compute_hommel_value(z_vals1, alpha1)
 
-    alpha2 = 0.4
-    z_vals2 = norm.isf(alpha2 + 1.e-3)
-    z_vals2 = np.atleast_1d(z_vals2)
-    hommel_value2 = _compute_hommel_value(z_vals2, alpha2)
-    assert hommel_value2 is True
+    z_vals = np.atleast_1d(3)
+    hommel_value = _compute_hommel_value(z_vals, 0.05)
+    assert hommel_value == 0
 
-    z_vals3 = norm.isf(alpha2 - 1e-3)
-    z_vals3 = np.atleast_1d(z_vals3)
-    hommel_value3 = _compute_hommel_value(z_vals3, alpha2)
-    assert hommel_value3 is False
+    z_vals = np.atleast_1d(1)
+    hommel_value = _compute_hommel_value(z_vals, 0.05)
+    assert hommel_value == 1
 
-    z_vals4 = np.ones(100) * norm.isf(alpha2 + 1.e-3)
-    hommel_value4 = _compute_hommel_value(z_vals4, alpha2)
-    assert hommel_value4 == len(z_vals4)
+    z_vals = np.random.normal(loc=0, scale=1, size=100)
+    hommel_value = _compute_hommel_value(z_vals, 0.1)
+    assert hommel_value == len(z_vals)
 
-    z_vals5 = np.random.normal(loc=0, scale=1, size=100)
-    alpha5 = 0.1
-    hommel_value5 = _compute_hommel_value(z_vals5, alpha5)
-    assert hommel_value5 == len(z_vals5)
+    hommel_value = _compute_hommel_value(z_vals, 1e-5)
+    assert hommel_value == len(z_vals)

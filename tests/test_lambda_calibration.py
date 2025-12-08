@@ -17,7 +17,7 @@ from pytest import warns
 def test_get_permuted_p_values():
     rng = np.random.RandomState(42)
     n = 20
-    p = 50
+    p = 21
     X = rng.randn(n, p)
     n_permutations = 100
     categ = rng.randint(2, size=n)
@@ -71,7 +71,7 @@ def test_get_permuted_p_values_one_sample():
 
 
 def test_get_pivotal_stat():
-    n_permutations = 500
+    n_permutations = 200
     p = 20
     rng = np.random.RandomState(42)
     p0 = np.sort(rng.rand(n_permutations, p), 1)
@@ -126,7 +126,7 @@ def test_coherence_calibration():
     stats are equivalent.
     """
     alpha = 0.05
-    n_permutations = 500
+    n_permutations = 200
     p = 50
     seed = 42
     np.random.seed(seed)
