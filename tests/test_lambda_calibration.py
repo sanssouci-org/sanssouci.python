@@ -85,7 +85,7 @@ def test_get_pivotal_stat():
         k_min=0)
     assert_array_almost_equal(piv_stat, piv_stat0)
 
-    assert piv_stat.shape == (B,)
+    assert piv_stat.shape == (n_permutations,)
     assert piv_stat.min() > 1.e-7
     assert piv_stat.max() < p0.max() * p
     assert isinstance(piv_stat, np.ndarray)
@@ -126,11 +126,11 @@ def test_coherence_calibration():
     stats are equivalent.
     """
     alpha = 0.05
-    B = 500
+    n_permutations = 500
     p = 50
     seed = 42
     np.random.seed(seed)
-    pval0 = np.random.uniform(size=(B, p))
+    pval0 = np.random.uniform(size=(n_permutations, p))
 
     # Calibrate by dichotmy (calibrate_jer) using Simes template
     alphas = np.linspace(0, 1, 1000)
