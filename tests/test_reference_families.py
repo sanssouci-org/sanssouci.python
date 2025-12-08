@@ -1,10 +1,12 @@
 import numpy as np
-from sanssouci.reference_families import inverse_linear_template
-from sanssouci.reference_families import linear_template, beta_template
-from sanssouci.reference_families import inverse_beta_template
+from sanssouci.reference_families import linear_template, inverse_linear_template
+from sanssouci.reference_families import beta_template, inverse_beta_template
+from sanssouci.reference_families import shifted_linear_template, inverse_shifted_linear_template
 from sanssouci.lambda_calibration import calibrate_jer, get_pivotal_stats
 from scipy.stats import beta
+
 from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_less
 
 
 def test_linear_template():
@@ -59,6 +61,41 @@ def test_inverse_beta_template():
 
     assert isinstance(til, np.ndarray)
     assert til.shape == p0.shape
+
+
+def test_shifted_linear_template():
+    alpha = .05
+    k = 50
+    m = 100
+    k_min = 0
+    t = shifted_linear_template(alpha, k, m, k_min)
+    assert_array_almost_equal(t, linear_template(alpha, k, m))
+    assert isinstance(t, np.ndarray)
+    assert len(t) == k
+
+    t1 = shifted_linear_template(alpha, k, m, 10)
+    t2 = shifted_linear_template(alpha, k, m, 20)
+    assert_array_almost_equal(t1[:10], t1[:10])
+    assert_array_less(t2[11:20], t1[11:20])
+    assert_array_less(t2[21:], t1[21:])
+
+
+def test_inverse_shifted_linear_template():
+    p = 20
+    rng = np.random.RandomState(42)
+    p0 = np.sort(rng.rand(p,))
+    til = inverse_shifted_linear_template(p0, 10, p, 0)
+    assert (til >= p0).all()
+    assert_array_almost_equal(til, inverse_linear_template(p0, 10, p))
+    assert isinstance(til, np.ndarray)
+    assert til.shape == p0.shape
+
+    til_full_template = inverse_shifted_linear_template(p0, p, p, 0)
+    assert_array_almost_equal(til_full_template, p0)
+
+    q1 = inverse_shifted_linear_template(p0, 10, p, 1)
+    q2 = inverse_shifted_linear_template(p0, 10, p, 2)
+    assert_array_less(q1, q2)
 
 
 def test_coherence_linear_template():
