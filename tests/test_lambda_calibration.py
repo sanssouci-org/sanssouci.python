@@ -142,7 +142,7 @@ def test_coherence_calibration():
     piv_stat = get_pivotal_stats(
         pval0,
         inverse_template=inverse_linear_template,
-        K=p)
+        k_max=p)
     lambda_quant = np.quantile(piv_stat, alpha)
     np.testing.assert_array_almost_equal(calibrated_tpl[-1],
                                          lambda_quant, decimal=2)
@@ -164,7 +164,8 @@ def test_coherence_calibration():
             match=r"No suitable template found; Simes is used instead"):
         calibrated_tpl = calibrate_jer(alpha, tpl_matrix, pval0, k_max=p)
     piv_stat = get_pivotal_stats(pval0,
-                                 inverse_template=inverse_linear_template, K=p)
+                                 inverse_template=inverse_linear_template,
+                                 k_max=p)
     lambda_quant = np.quantile(piv_stat, alpha)
     np.testing.assert_array_almost_equal(calibrated_tpl[-1],
                                          lambda_quant, decimal=2)

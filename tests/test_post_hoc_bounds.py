@@ -38,7 +38,7 @@ def test_max_fp():
     p_values = ()
     thresholds = np.array([1.e-4])
     assert max_fp(p_values, thresholds) == 0
-    
+
 
 def test_min_tp():
     p_values = np.linspace(1.e-6, 1 - 1.e-6, 100)
@@ -190,7 +190,7 @@ def test_find_largest_region():
     region_size = find_largest_region(p_values, thresholds, TDP)
     # in the case where len(admissible) == 0
     TDP2 = curve_min_tdp(p_values, thresholds) + 1.e-3
-    region_size2 = find_largest_region(p_values, thresholds, TDP2)        
+    region_size2 = find_largest_region(p_values, thresholds, TDP2)
     assert region_size >= 0
     assert region_size == 21
     assert region_size2 == 0
@@ -206,13 +206,12 @@ def test_compute_hommel_value():
     z_vals2 = norm.isf(alpha2 + 1.e-3)
     z_vals2 = np.atleast_1d(z_vals2)
     hommel_value2 = _compute_hommel_value(z_vals2, alpha2)
-    assert hommel_value2 == True
-
+    assert hommel_value2 is True
 
     z_vals3 = norm.isf(alpha2 - 1e-3)
     z_vals3 = np.atleast_1d(z_vals3)
     hommel_value3 = _compute_hommel_value(z_vals3, alpha2)
-    assert hommel_value3 == False
+    assert hommel_value3 is False
 
     z_vals4 = np.ones(100) * norm.isf(alpha2 + 1.e-3)
     hommel_value4 = _compute_hommel_value(z_vals4, alpha2)
@@ -222,5 +221,3 @@ def test_compute_hommel_value():
     alpha5 = 0.1
     hommel_value5 = _compute_hommel_value(z_vals5, alpha5)
     assert hommel_value5 == len(z_vals5)
-
-
