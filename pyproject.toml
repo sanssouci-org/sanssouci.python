@@ -42,3 +42,4 @@ Issues = "https://github.com/sanssouci-org/sanssouci.python/issues"
 minversion = "7.4"
 pythonpath = "src"
 testpaths = "tests"
+

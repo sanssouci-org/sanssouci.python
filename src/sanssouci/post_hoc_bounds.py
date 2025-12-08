@@ -279,7 +279,7 @@ def _compute_hommel_value(z_vals, alpha):
     n_tests = len(p_vals)
 
     if len(p_vals) == 1:
-        return p_vals[0] > alpha
+        return int(p_vals[0] > alpha)
     if p_vals[0] > alpha:
         return n_tests
     slopes = (alpha - p_vals[: - 1]) / np.arange(n_tests, 1, -1)

@@ -1,10 +1,13 @@
 import numpy as np
+from sanssouci.reference_families import linear_template
 from sanssouci.reference_families import inverse_linear_template
-from sanssouci.reference_families import linear_template, beta_template
-from sanssouci.reference_families import inverse_beta_template
-from sanssouci.lambda_calibration import calibrate_jer, get_pivotal_stats
+from sanssouci.reference_families import beta_template, inverse_beta_template
+from sanssouci.reference_families import shifted_linear_template
+from sanssouci.reference_families import inverse_shifted_linear_template
 from scipy.stats import beta
+
 from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_less
 
 
 def test_linear_template():
@@ -61,29 +64,38 @@ def test_inverse_beta_template():
     assert til.shape == p0.shape
 
 
-def test_coherence_linear_template():
-    """
-    Testing whether linear_template and inverse_linear_template are actually
-    inverse functions of one another. This also tests that calibration via
-    dichotomy and pivotal stats are indeed equivalent.
-    """
-    alpha = 0.05
-    n_permutations = 100
-    p = 50
-    seed = 42
-    np.random.seed(seed)
+def test_shifted_linear_template():
+    alpha = .05
+    k = 50
+    m = 100
+    k_min = 0
+    t = shifted_linear_template(alpha, k, m, k_min)
+    assert_array_almost_equal(t, linear_template(alpha, k, m))
+    assert isinstance(t, np.ndarray)
+    assert len(t) == k
 
-    # Calibrate by dichotmy (calibrate_jer) using Simes template
-    alphas = np.linspace(0, 1, 1000)
-    simes_matrix = np.vstack([linear_template(alpha,
-                                              p, p) for alpha in alphas])
-    pval0 = np.random.uniform(size=(n_permutations, p))
-    pval0 = np.sort(pval0, axis=1)
-    calibrated_tpl = calibrate_jer(alpha, simes_matrix, pval0, k_max=p)
+    t1 = shifted_linear_template(alpha, k, m, 10)
+    t2 = shifted_linear_template(alpha, k, m, 20)
+    assert_array_almost_equal(t1[:10], t1[:10])
+    assert_array_less(t2[11:20], t1[11:20])
+    assert_array_less(t2[21:], t1[21:])
 
-    # Calibrate using pivotal statistics
 
-    piv_stat = get_pivotal_stats(pval0, k_max=p)
-    lambda_quant = np.quantile(piv_stat, alpha)
-    np.testing.assert_array_almost_equal(
-        calibrated_tpl[-1], lambda_quant, decimal=3)
+def test_inverse_shifted_linear_template():
+    p = 20
+    rng = np.random.RandomState(42)
+    p0 = np.sort(rng.rand(p,))
+    til = inverse_shifted_linear_template(p0, 10, p, 0)
+    assert (til >= p0).all()
+    assert_array_almost_equal(til, inverse_linear_template(p0, 10, p))
+    assert isinstance(til, np.ndarray)
+    assert til.shape == p0.shape
+
+    til_full_template = inverse_shifted_linear_template(p0, p, p, 0)
+    assert_array_almost_equal(til_full_template, p0)
+
+    q0 = inverse_shifted_linear_template(p0, 1, p, 2)
+    assert_array_almost_equal(q0, float('inf'))
+    q1 = inverse_shifted_linear_template(p0, 10, p, 1)
+    q2 = inverse_shifted_linear_template(p0, 10, p, 2)
+    assert_array_less(q1, q2)
