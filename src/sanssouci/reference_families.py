@@ -30,14 +30,16 @@ def linear_template(alpha, k, m):
 def inverse_linear_template(y, k, m):
     """
     Computes the inverse of the linear template (Simes template)
+
     Parameters
     ----------
-    y : array of floats of shape (B, )
+    y : array of floats of shape (n_permutations, )
         values to apply template to
     k : int
         index of rejection set in linear template
     m : int
         number of hypotheses
+
     Returns
     -------
     estimated_template : array of same shape as y
@@ -58,6 +60,7 @@ def beta_template(alpha, k, m):
         number of rejection sets in Beta template
     m : int
         number of hypotheses
+
     Returns
     -------
     template : array of shape (k,)
@@ -69,14 +72,16 @@ def beta_template(alpha, k, m):
 def inverse_beta_template(y, k, m):
     """
     Computes the inverse of the Beta template
+
     Parameters
     ----------
-    y : array of floats of shape (B, )
+    y : array of floats of shape (n_permutations, )
         values to apply template to
     k : int
         index of rejection set in beta template
     m : int
         number of hypotheses
+
     Returns
     -------
     estimated_template : array of same shape as y
@@ -87,6 +92,7 @@ def inverse_beta_template(y, k, m):
 def shifted_linear_template(alpha, k, m, k_min):
     """
     Computes the shifted linear template (pARI template)
+
     Parameters
     ----------
     alpha : float
@@ -99,6 +105,7 @@ def shifted_linear_template(alpha, k, m, k_min):
     k_min : int
         parameter that defines the shift of the template.
         The template is zero for k <= k_min.
+
     Returns
     -------
     template : array of shape (k,)
@@ -112,9 +119,10 @@ def shifted_linear_template(alpha, k, m, k_min):
 def inverse_shifted_linear_template(y, k, m, k_min):
     """
     Computes the inverse of the shifted linear template (pARI template)
+
     Parameters
     ----------
-    y : array of floats of shape (B, )
+    y : array of floats of shape (n_permutations, )
         values to apply template to
     k : int
         index of rejection set in linear template

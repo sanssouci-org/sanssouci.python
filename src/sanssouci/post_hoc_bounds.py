@@ -118,7 +118,7 @@ def curve_max_fp(p_values, thresholds):
     p_values : 1D numpy.array
         A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of K JER-controlling thresholds,
+        A 1D numpy array  of k_max JER-controlling thresholds,
         sorted non-decreasingly
 
     Returns
@@ -150,11 +150,11 @@ def curve_max_fp(p_values, thresholds):
                                     np.ones(p - k_max)))
         k_max = thresholds.shape[0]
 
-    K = np.ones(p) * (k_max)
-    # K[i] = number of k/ T[i] <= s[k] = BB in 'Mein2006'
+    k_vals = np.ones(p) * (k_max)
+    # k_vals[i] = number of k/ T[i] <= s[k] = BB in 'Mein2006'
     Z = np.ones(k_max) * (p)
     # Z[k] = number of i/ T[i] >  s[k] = cardinal of R_k
-    # 'K' and 'Z' are initialized to their largest possible value,
+    # 'k_vals' and 'Z' are initialized to their largest possible value,
     #       ie 'p' and 'k_max', respectively
 
     kk = 0
@@ -162,26 +162,26 @@ def curve_max_fp(p_values, thresholds):
 
     while (kk < k_max) and (ii < p):
         if thresholds[kk] > p_values[ii]:
-            K[ii] = kk
+            k_vals[ii] = kk
             ii += 1
         else:
             Z[kk] = ii
             kk += 1
 
     max_fp_ = np.zeros(p)
-    indices = np.where(K > 0)[0]
+    indices = np.where(k_vals > 0)[0]
     A = Z - np.arange(0, k_max)
 
-    K_ww = K[K > 0].astype(int)
+    k_ww = k_vals[k_vals > 0].astype(int)
     cummax_A = A.copy()
     for i in range(1, cummax_A.shape[0]):
         cummax_A[i] = np.max([cummax_A[i - 1], cummax_A[i]])
 
-    cA = cummax_A[K_ww - 1]  # cA[i] = max_{k<K[i]} A[k]
+    cA = cummax_A[k_ww - 1]  # cA[i] = max_{k<k_vals[i]} A[k]
 
-    max_fp_[K > 0] = np.min(
+    max_fp_[k_vals > 0] = np.min(
         np.concatenate(((indices + 1 - cA).reshape(1, -1),
-                        (K[K > 0]).reshape(1, -1)),
+                        (k_vals[k_vals > 0]).reshape(1, -1)),
                        axis=0), axis=0)
 
     return max_fp_
@@ -198,7 +198,7 @@ def curve_min_tdp(p_values, thresholds):
     p_values : 1D numpy.array
         A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of K JER-controlling thresholds,
+        A 1D numpy array  of k_max JER-controlling thresholds,
         sorted non-decreasingly
 
     Returns
@@ -231,7 +231,7 @@ def find_largest_region(p_values, thresholds, tdp, masker=None):
     p_values : 1D numpy.array
         A 1D numpy array containing all p-values,sorted non-decreasingly
     thresholds : 1D numpy.array
-        A 1D numpy array  of K JER-controlling thresholds,
+        A 1D numpy array  of k_max JER-controlling thresholds,
         sorted non-decreasingly
     tdp : float
         True discovery proportion
