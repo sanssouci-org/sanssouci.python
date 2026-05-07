@@ -64,3 +64,13 @@ def test_row_welch_tests():
     for key, value in welch.items():
         assert len(value) == p
         assert isinstance(value, np.ndarray)
+    
+    p_val_stats = np.zeros(p)
+    s0 = np.where(labels == 0)[0]
+    s1 = np.where(labels == 1)[0]
+
+    for i in range(p):
+        rwt = stats.ttest_ind(X[s0, i], X[s1, i], equal_var=False)
+        p_val_stats[i] = rwt.pvalue
+
+    assert np.allclose(welch['p_value'] - p_val_stats)

@@ -90,12 +90,7 @@ def get_permuted_p_values(
 
     return pval0
 
-
-def get_permuted_p_values_one_sample(
-        X,
-        n_permutations=100,
-        seed=None,
-        n_jobs=1):
+def get_permuted_p_values_one_sample(X, n_permutations=100, seed=None, max_memory_gb=1.0):
     """
     Get permutation p-values: Get a matrix of p-values under the null
     hypothesis obtained by sign-flipping (one-sample test).
@@ -107,8 +102,8 @@ def get_permuted_p_values_one_sample(
         (hypotheses)
     n_permutations : int
         number of sign-flippings to be performed (default=100)
-    n_jobs : int
-        number of CPUs used for computation. Default = 1
+    max_memory_gb : float
+        maximal memory size allows (defines chunk size)
 
     Returns
     -------
@@ -122,30 +117,33 @@ def get_permuted_p_values_one_sample(
         confidence bounds on false positives using reference families.
         Annals of Statistics, 48(3), 1281-1303.
     """
-
     rng = check_random_state(seed)
-    seeds = rng.randint(np.iinfo(np.int32).max, size=n_permutations)
     n, p = X.shape
+    
+    # chunk size of 1 permutation in bytes (float64 = 8 bytes)
+    bytes_per_perm = n * p * 8
+    chunk_size = max(1, int(max_memory_gb * 1e9 / bytes_per_perm))
+    chunk_size = min(chunk_size, n_permutations)  # only need n_permutations in total!
 
-    # intialise p-values
-    pval0 = Parallel(n_jobs=n_jobs)(delayed(
-        _compute_permuted_pvalues_1samp)(X, seed=seed_) for seed_ in seeds)
+    pval0 = np.empty((n_permutations, p))
 
-    # Sort each line
-    pval0 = np.sort(pval0, axis=1)
+    for start in range(0, n_permutations, chunk_size):
+        end = min(start + chunk_size, n_permutations)
+        bs = end - start # actual chunk size                                                  
 
-    return pval0
+        # a chunk of permutations 
+        signs = rng.choice([-1, 1], size=(bs, n))
+        X_flipped = signs[:, :, np.newaxis] * X[np.newaxis, :, :]
+        
+        # t stat
+        means = X_flipped.mean(axis=1)
+        stds  = X_flipped.std(axis=1, ddof=1)
+        t_stats = means / (stds / np.sqrt(n))
 
-
-def _compute_permuted_pvalues_1samp(X, seed=None):
-    """
-    Compute randomized p-values for a single sign-flip of the input data
-    """
-    np.random.seed(seed)
-    n, p = X.shape
-    X_flipped = (X.T * (2 * np.random.randint(-1, 1, size=n) + 1)).T
-    _, permuted_pvals = stats.ttest_1samp(X_flipped, 0)
-    return permuted_pvals
+        # two-sided p-values
+        pval0[start:end] = 2 * stats.t.sf(np.abs(t_stats), df=n-1)
+    
+    return np.sort(pval0, axis=1)
 
 
 def get_pivotal_stats(p0, inverse_template=inverse_linear_template, k_max=-1):
